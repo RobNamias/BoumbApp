@@ -1,0 +1,108 @@
+.ai-prompt {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    height: 100%;
+    /* Fix: Take full height of modal */
+
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h4 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .ai-prompt__context {
+            display: flex;
+            gap: 0.5rem;
+
+            .badge {
+                font-size: 0.7rem;
+                background: #333;
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: #aaa;
+            }
+        }
+    }
+
+    &__input {
+        background: #121212;
+        border: 1px solid #444;
+        color: #ddd;
+        border-radius: 4px;
+        padding: 0.5rem;
+        min-height: 300px !important;
+        /* Force very tall */
+        flex: 1;
+        /* Fix: Expand to fill space */
+        resize: none;
+        /* Fix: Let flex handle size */
+        font-family: inherit;
+        font-size: 0.9rem;
+
+        &:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+
+        .btn-generate {
+            background: var(--primary-color);
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            &:hover:not(:disabled) {
+                opacity: 0.9;
+            }
+
+            &:disabled {
+                background: #444;
+                color: #888;
+                cursor: not-allowed;
+            }
+
+            &.loading {
+                cursor: wait;
+            }
+        }
+    }
+
+    &__error {
+        color: #ff6b6b;
+        font-size: 0.8rem;
+        background: rgba(255, 107, 107, 0.1);
+        padding: 0.5rem;
+        border-radius: 4px;
+        border-left: 3px solid #ff6b6b;
+    }
+}

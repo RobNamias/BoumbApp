@@ -1,0 +1,228 @@
+.popoverContainer {
+    position: absolute;
+    top: 100%;
+    right: 0; // Fix cut-off by aligning right
+    margin-top: 12px;
+    width: 320px;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 1rem;
+    z-index: 1000;
+
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h4 {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #aaa;
+        font-weight: 600;
+    }
+
+    .closeBtn {
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        padding: 4px;
+
+        &:hover {
+            color: #fff;
+        }
+    }
+}
+
+.stepPrompt {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.contextInfo {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #666;
+
+    span {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
+
+.input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 0.8rem;
+    border-radius: 8px;
+    resize: none;
+    height: 80px;
+    font-family: inherit;
+    font-size: 0.9rem;
+
+    &:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        background: rgba(0, 0, 0, 0.5);
+    }
+}
+
+.generateBtn {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32); // Green Gradient
+    border: none;
+    color: white;
+    padding: 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        filter: brightness(1.1);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error {
+    color: #ff4d4d;
+    font-size: 0.8rem;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+/* Feedback Step */
+.stepFeedback {
+    text-align: center;
+    color: #ddd;
+
+    .successMsg {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #4caf50;
+        margin: 0.5rem 0 0.2rem;
+    }
+
+    .subtext {
+        font-size: 0.8rem;
+        color: #888;
+        margin-bottom: 1rem;
+    }
+
+    label {
+        display: block;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+}
+
+.ratingGrid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin-bottom: 1rem;
+}
+
+.ratingBtn {
+    background: #333;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 6px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.1s;
+
+    &:hover {
+        background: #4CAF50;
+        color: white;
+        border-color: #4CAF50;
+        transform: scale(1.05);
+    }
+}
+
+.thanks {
+    margin: 1.5rem 0;
+    color: #4caf50;
+    font-weight: bold;
+    animation: fadeIn 0.5s;
+}
+
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    button {
+        flex: 1;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        border: none;
+    }
+
+    .retryBtn {
+        background: transparent;
+        border: 1px solid #444;
+        color: #aaa;
+
+        &:hover {
+            border-color: #666;
+            color: #fff;
+        }
+    }
+
+    .doneBtn {
+        background: #333;
+        color: #fff;
+
+        &:hover {
+            background: #444;
+        }
+    }
+}

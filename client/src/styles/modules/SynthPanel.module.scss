@@ -1,0 +1,112 @@
+.synthPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    border: 1px solid #333;
+    color: #fff;
+    width: 100%;
+    max-width: 320px; // Limit width for panel look
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #121212;
+        padding: 6px 10px;
+        border-radius: 4px;
+        border: 1px solid #2a2a2a;
+
+        .leftGroup,
+        .rightGroup {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 0.75rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .muteBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    .body {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+    }
+
+    .adsrSection {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+
+        .graphContainer {
+            display: flex;
+            justify-content: center;
+            background: #161616;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #252525;
+        }
+
+        .knobsRow {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 4px;
+        }
+    }
+
+    .oscSection {
+        display: grid;
+        grid-template-columns: 28px 28px;
+        grid-template-rows: 28px 28px;
+        align-content: center;
+        width: 60px;
+        height: fit-content;
+        gap: 2px 4px;
+
+        .oscBtn {
+            padding: 0;
+            font-size: 0.6rem;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #333;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            color: #eee;
+            cursor: pointer;
+            transition: all 0.2s;
+
+            &:hover {
+                background-color: #444;
+                border-color: #666;
+            }
+
+            &.active {
+                background-color: #4CAF50; // Synth Green
+                color: #fff;
+                border-color: #81C784;
+                box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+            }
+        }
+    }
+}

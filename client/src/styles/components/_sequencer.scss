@@ -1,0 +1,43 @@
+.sequencer {
+    display: flex;
+    flex-wrap: nowrap; // Single row enforced
+    gap: 4px; // Spacing between steps
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+
+    // Custom Scrollbar for style
+    &::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    // StepCell override if needed within sequencer context
+    .step-cell {
+        flex: 0 0 42px; // Fixed width for classic look (Widened to trigger scroll on 1080p)
+        height: 60px; // Taller than strictly needed for "channel strip" feel
+
+        // Every 4th step marker (beat separator)
+        &:nth-child(4n) {
+            margin-right: 4px; // Visual gap every beat (Reduced from 8px)
+        }
+
+        // Remove margin on last item
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}

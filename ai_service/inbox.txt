@@ -1,0 +1,10 @@
+styles/world: Japanese Traditional Scales (Hirajoshi, In)
+styles/world: Indian Raga Basics (Bhairav, Yaman)
+styles/world: Middle Eastern Maqam Scales (Hijaz, Bayati)
+styles/world: Gamelan Rhythm Patterns
+styles/world: Koto Harp Playing Techniques
+styles/world: Sitar Emulation MIDI
+styles/world: Taiko Drum Patterns
+styles/world: Andalusian Cadence (Spanish)
+styles/world: Pentatonic China Scales
+styles/world: African Polyrhythms Basics

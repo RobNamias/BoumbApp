@@ -1,0 +1,15 @@
+.led {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--led-color, var(--primary-color));
+    opacity: 0.3;
+    transition: all 0.2s ease-in-out;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+
+    &--active {
+        opacity: 1;
+        box-shadow: 0 0 8px var(--led-color, var(--primary-color)), inset 0 1px 1px rgba(255, 255, 255, 0.5);
+    }
+}

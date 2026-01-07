@@ -1,0 +1,51 @@
+.pagination {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    // Match TransportControls styling
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    &__button {
+        position: relative;
+        min-width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    &__led {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 6px !important; // Override default size for compact view
+        height: 6px !important;
+        pointer-events: none;
+
+        &--blinking {
+            animation: blink 1s infinite;
+        }
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+        box-shadow: 0 0 8px var(--led-color, var(--primary-color));
+    }
+
+    50% {
+        opacity: 0.3;
+        box-shadow: none;
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 8px var(--led-color, var(--primary-color));
+    }
+}

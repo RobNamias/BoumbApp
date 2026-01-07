@@ -1,0 +1,150 @@
+/* manual.css */
+:root {
+    --bg-color: #121212;
+    --text-color: #e1e1e6;
+    --accent-color: #bb86fc;
+    --secondary-color: #03dac6;
+    --card-bg: #1e1e1e;
+    --border-color: #333;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: var(--accent-color);
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+h2 {
+    color: var(--secondary-color);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-top: 40px;
+}
+
+h3 {
+    color: #fff;
+    margin-top: 25px;
+}
+
+.nav-links {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+code {
+    background: #2a2a2a;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    color: #ff79c6;
+}
+
+.toc-list {
+    list-style: none;
+    padding: 0;
+}
+
+.toc-list li {
+    margin-bottom: 15px;
+}
+
+.toc-list a {
+    display: block;
+    padding: 15px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.lang-switch {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.lang-switch a {
+    color: #4CAF50;
+    text-decoration: none;
+    border: 1px solid #4CAF50;
+    padding: 5px 10px;
+    border-radius: 20px;
+    transition: all 0.2s;
+}
+
+.lang-switch a:hover {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.toc-list a:hover {
+    background: #2a2a2a;
+    transform: translateX(5px);
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-nav {
+    display: inline-block;
+    padding: 10px 20px;
+    background: var(--border-color);
+    border-radius: 4px;
+    margin-top: 40px;
+    font-size: 0.9rem;
+}
+
+.btn-nav:hover {
+    background: var(--accent-color);
+    color: #000;
+    text-decoration: none;
+}

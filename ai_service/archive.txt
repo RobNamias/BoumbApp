@@ -1,0 +1,37 @@
+styles/house: House Music Chords
+styles/techno: Acid Bassline
+styles/hiphop: Lo-Fi Drum Pattern
+instruments/trap: Hi-Hats Rolls
+theory/jazz: ii-V-I Progression (C Major)
+styles/ambient: Pad Textures
+styles/house: Deep Bass
+styles/reggaeton: Dembow Rhythm
+styles/dnb: Amen Break Dynamics
+tags/tempo: Fast 140bpm
+synth_settings/bass: Reese Patch
+[2025-12-16 16:33:20] styles/acidcore : Classic Acidcore melody
+[2025-12-16 16:33:20] instruments/bass : slap bass principes
+[2025-12-16 16:33:20] theory/keys : Lead keyboard principes
+[2025-12-16 16:33:20] theory/scales : Phrygian mode
+[2025-12-16 16:33:20] theory/keys : Lead keyboard principes
+[2025-12-16 16:33:20] styles/cheaptune : Principles
+[2025-12-21 00:30:39] theory: Minor Pentatonic Scale
+[2025-12-21 00:30:39] theory: Dorian Mode usage
+[2025-12-21 00:30:39] theory: Circle of Fifths
+[2025-12-21 00:30:39] theory: Blues Scale basics
+[2025-12-21 00:30:39] theory: Chord Inversions
+[2025-12-21 00:30:39] styles: Lo-Fi Hip Hop Drum Patterns
+[2025-12-21 00:30:39] styles: Trap Hi-Hats Rolls
+[2025-12-21 00:30:39] styles: Dubstep Wobble Bass Rhythm
+[2025-12-21 00:30:39] styles: Reggaeton Dembow Rhythm
+[2025-12-21 00:30:39] styles: Trance Rolling Bassline
+[2025-12-21 00:30:39] instruments: Funk Bassline techniques
+[2025-12-21 00:30:39] instruments: Piano House Chords
+[2025-12-21 00:30:39] instruments: 808 Bass Slide techniques
+[2025-12-21 00:30:39] instruments: String Arrangement MIDI
+[2025-12-21 00:30:39] instruments: Arpeggiator Patterns
+[2025-12-21 00:30:39] synth_settings: SuperSaw Synth Patch
+[2025-12-21 00:30:39] synth_settings: Pluck Synth Sound Design
+[2025-12-21 00:30:39] synth_settings: Acid 303 Slide & Accent
+[2025-12-21 00:30:39] synth_settings: Reese Bass Synthesis
+[2025-12-21 00:30:39] synth_settings: Pad Atmospheric Textures

@@ -1,0 +1,18 @@
+{
+    "devDependencies": {
+        "file-loader": "^6.2.0"
+    },
+    "license": "UNLICENSED",
+    "private": true,
+    "scripts": {},
+    "name": "app",
+    "version": "1.0.0",
+    "description": "",
+    "directories": {
+        "test": "tests"
+    },
+    "keywords": [],
+    "author": "",
+    "type": "commonjs",
+    "dependencies": {}
+}

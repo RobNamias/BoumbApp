@@ -1,0 +1,33 @@
+# Glossaire & Index Global
+
+> Ce fichier centralise les concepts appris par le système. Il sert de table de référence pour l'IA et l'utilisateur.
+
+## Index
+- **Minor Pentatonic Scale**: [theory/minor_pentatonic_scale.md](theory/minor_pentatonic_scale.md)
+- **Dorian Mode usage**: [theory/dorian_mode_usage.md](theory/dorian_mode_usage.md)
+- **Circle of Fifths**: [theory/circle_of_fifths.md](theory/circle_of_fifths.md)
+- **Blues Scale basics**: [theory/blues_scale_basics.md](theory/blues_scale_basics.md)
+- **Chord Inversions**: [theory/chord_inversions.md](theory/chord_inversions.md)
+- **Lo-Fi Hip Hop Drum Patterns**: [styles/lo-fi_hip_hop_drum_patterns.md](styles/lo-fi_hip_hop_drum_patterns.md)
+- **Trap Hi-Hats Rolls**: [styles/trap_hi-hats_rolls.md](styles/trap_hi-hats_rolls.md)
+- **Dubstep Wobble Bass Rhythm**: [styles/dubstep_wobble_bass_rhythm.md](styles/dubstep_wobble_bass_rhythm.md)
+- **Reggaeton Dembow Rhythm**: [styles/reggaeton_dembow_rhythm.md](styles/reggaeton_dembow_rhythm.md)
+- **Trance Rolling Bassline**: [styles/trance_rolling_bassline.md](styles/trance_rolling_bassline.md)
+- **Piano House Chords**: [instruments/piano_house_chords.md](instruments/piano_house_chords.md)
+- **808 Bass Slide techniques**: [instruments/808_bass_slide_techniques.md](instruments/808_bass_slide_techniques.md)
+- **String Arrangement MIDI**: [instruments/string_arrangement_midi.md](instruments/string_arrangement_midi.md)
+- **Arpeggiator Patterns**: [instruments/arpeggiator_patterns.md](instruments/arpeggiator_patterns.md)
+- **SuperSaw Synth Patch**: [synth_settings/supersaw_synth_patch.md](synth_settings/supersaw_synth_patch.md)
+- **Pluck Synth Sound Design**: [synth_settings/pluck_synth_sound_design.md](synth_settings/pluck_synth_sound_design.md)
+- **Acid 303 Slide & Accent**: [synth_settings/acid_303_slide__accent.md](synth_settings/acid_303_slide__accent.md)
+- **Reese Bass Synthesis**: [synth_settings/reese_bass_synthesis.md](synth_settings/reese_bass_synthesis.md)
+- **Pad Atmospheric Textures**: [synth_settings/pad_atmospheric_textures.md](synth_settings/pad_atmospheric_textures.md)
+- **Japanese Traditional Scales (Hirajoshi, In)**: [styles/world/japanese_traditional_scales_hirajoshi_in.md](styles/world/japanese_traditional_scales_hirajoshi_in.md)
+- **Indian Raga Basics (Bhairav, Yaman)**: [styles/world/indian_raga_basics_bhairav_yaman.md](styles/world/indian_raga_basics_bhairav_yaman.md)
+- **Middle Eastern Maqam Scales (Hijaz, Bayati)**: [styles/world/middle_eastern_maqam_scales_hijaz_bayati.md](styles/world/middle_eastern_maqam_scales_hijaz_bayati.md)
+- **Gamelan Rhythm Patterns**: [styles/world/gamelan_rhythm_patterns.md](styles/world/gamelan_rhythm_patterns.md)
+- **Koto Harp Playing Techniques**: [styles/world/koto_harp_playing_techniques.md](styles/world/koto_harp_playing_techniques.md)
+- **Sitar Emulation MIDI**: [styles/world/sitar_emulation_midi.md](styles/world/sitar_emulation_midi.md)
+- **Taiko Drum Patterns**: [styles/world/taiko_drum_patterns.md](styles/world/taiko_drum_patterns.md)
+- **Andalusian Cadence (Spanish)**: [styles/world/andalusian_cadence_spanish.md](styles/world/andalusian_cadence_spanish.md)
+- **Pentatonic China Scales**: [styles/world/pentatonic_china_scales.md](styles/world/pentatonic_china_scales.md)

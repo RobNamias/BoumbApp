@@ -1,0 +1,232 @@
+.juicy-box {
+    display: flex;
+    flex-direction: column; // Stack Controls (Top) and Main Layout (Bottom)
+    width: 100%;
+    max-width: 100%;
+    background-color: #121212;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+
+    // Phase 3: Global Toolbar
+    &__controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap; // Force single line
+        background-color: #1e1e1e; // Distinct header background
+        border-bottom: 1px solid #333;
+        margin: -10px -10px 10px -10px; // Negative margin to flush with container edges
+        padding: 8px 15px; // Reduced padding for compactness
+        border-radius: 8px 8px 0 0; // Rounded top corners only
+
+        .juicy-title {
+            margin: 0;
+            color: #eee;
+            font-size: 1rem; // Smaller, sleeker
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .controls-center {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex: 1; // Take available space
+            justify-content: center; // Center the view selector
+        }
+
+        .view-selector {
+            display: flex;
+            background: #111; // Darker well for buttons
+            border-radius: 4px;
+            padding: 3px;
+            gap: 2px;
+
+            .view-btn {
+                background: transparent;
+                border: none;
+                color: #ccc; // High contrast (was #aaa)
+                padding: 4px 10px;
+                cursor: pointer;
+                font-size: 0.75rem;
+                font-weight: 600;
+                border-radius: 3px;
+                transition: all 0.2s;
+
+                &:hover {
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.2); // Increased opacity for contrast
+                }
+
+                &.active {
+                    background: #535bf2; // Darker for better contrast
+                    color: #ffffff;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+                }
+            }
+        }
+
+        .controls-right {
+            display: flex;
+            align-items: center;
+            gap: 15px; // Tighter gap
+
+            .control-item {
+                display: flex;
+                flex-direction: row; // Horizontal layout for controls (Label + Knob)
+                align-items: center;
+                gap: 8px;
+
+                .control-label {
+                    font-size: 0.65rem;
+                    color: #888;
+                    text-transform: uppercase;
+                    font-weight: 600;
+                }
+
+                .control-led-wrapper {
+                    cursor: pointer;
+                    padding: 4px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: background-color 0.2s;
+
+                    // Button Reset
+                    background: transparent;
+                    border: none;
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.1);
+                    }
+
+                    &:focus-visible {
+                        outline: 1px solid #646cff;
+                    }
+                }
+            }
+        }
+    }
+
+    &__main-layout {
+        display: flex;
+        flex-direction: row; // Split Left/Right
+        width: 100%; // Fill available space
+        max-width: 100%; // Ensure it doesn't overflow container
+        // margin: 0 auto; // Center no longer needed with full width
+        // Overflow removed to prevent clipping
+    }
+
+    &__headers {
+        flex: 0 0 160px; // Fixed width matching TrackHeader (Updated)
+        display: flex;
+        flex-direction: column;
+        margin-right: 10px;
+        z-index: 2;
+
+        .juicy-timeline-spacer {
+            height: 30px;
+            margin-bottom: 5px;
+            flex-shrink: 0; // Prevent collapsing
+        }
+
+        .juicy-row-header {
+            height: 60px; // Strict height sync
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    &__sequencers {
+        flex: 1; // Allow shrinking! Critical for small screens.
+        min-width: 0; // CRITICAL: Allows flex item to shrink below content size and trigger scroll
+        display: flex;
+        flex-direction: column;
+        overflow-x: auto; // ONLY this part scrolls
+        padding-bottom: 5px;
+
+        // Timeline Row
+        .juicy-timeline-row {
+            display: flex;
+            height: 30px; // Thinner than tracks
+            margin-bottom: 5px;
+            width: max-content; // Expand with content
+            min-width: 100%;
+            padding: 0 10px 0 10px; // Match .sequencer padding if any (Sequencer has 10px padding in _sequencer.scss)
+            // Actually Sequencer has 10px padding! We must match alignment.
+            // Sequencer padding: 10px; -> step cells start at 10px from left.
+
+            .timeline-cell {
+                flex: 0 0 42px; // Match step-cell width
+                display: flex;
+                align-items: center;
+                justify-content: flex-start; // Number on left like logic? or center?
+                font-size: 0.7rem;
+                color: #666;
+
+                &.beat-marker {
+                    font-weight: bold;
+                    color: #888;
+                    border-left: 1px solid #444; // Visual marker
+                    padding-left: 4px;
+                }
+
+                // Match sequencer gap logic
+                gap: 0; // No gap on flex container, but Sequencer has `gap: 4px`.
+
+                // To align PERFECTLY, we must replicate the spacing.
+                margin-right: 4px; // Replicate gap: 4px from Sequencer
+
+                &:nth-child(4n) {
+                    margin-right: 8px; // 4px gap + 4px extra margin equivalent
+                }
+
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+
+
+        .juicy-row-sequencer {
+            height: 60px; // Strict height sync
+            margin-bottom: 10px;
+            width: max-content;
+            min-width: 100%;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+
+            // TDD fix: Strict override of Sequencer to prevent internal scrolling
+            .sequencer {
+                overflow-x: visible !important; // Prevent individual scroll
+                max-width: none !important; // Allow full expansion
+                background-color: transparent; // Clean look integration
+                padding: 0; // Remove default padding for tight grid
+                border: none; // seamless
+            }
+        }
+
+        &::-webkit-scrollbar {
+            height: 6px; // Thinner for sleek look
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 3px; // Matching radius
+
+            &:hover {
+                background: #555;
+            }
+        }
+    }
+}

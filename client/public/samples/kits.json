@@ -1,0 +1,44 @@
+{
+    "kits": {
+        "808": {
+            "name": "Classic 808",
+            "samples": {
+                "kick": "samples/kits/808/Kick.ogg",
+                "snare": "samples/kits/808/Snare.ogg",
+                "closedHat": "samples/kits/808/ClosedHat.ogg",
+                "openHat": "samples/kits/808/OpenHat.ogg",
+                "crash": "samples/kits/808/Crash.ogg"
+            }
+        },
+        "909": {
+            "name": "Punchy 909",
+            "samples": {
+                "kick": "samples/kits/909/Kick.ogg",
+                "snare": "samples/kits/909/Snare.ogg",
+                "closedHat": "samples/kits/909/ClosedHat.ogg",
+                "openHat": "samples/kits/909/OpenHat.ogg",
+                "crash": "samples/kits/909/Crash.ogg"
+            }
+        },
+        "707": {
+            "name": "Vintage 707",
+            "samples": {
+                "kick": "samples/kits/707/Kick.ogg",
+                "snare": "samples/kits/707/Snare.ogg",
+                "closedHat": "samples/kits/707/ClosedHat.ogg",
+                "openHat": "samples/kits/707/OpenHat.ogg",
+                "crash": "samples/kits/707/Crash.ogg"
+            }
+        },
+        "tribe": {
+            "name": "Tribe Hardcore",
+            "samples": {
+                "kick": "samples/kits/tribe/Kick.ogg",
+                "snare": "samples/kits/tribe/Snare.ogg",
+                "closedHat": "samples/kits/tribe/ClosedHat.ogg",
+                "openHat": "samples/kits/tribe/OpenHat.ogg",
+                "crash": "samples/kits/tribe/Crash.ogg"
+            }
+        }
+    }
+}

@@ -1,0 +1,55 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+.idea/
+.vscode/
+*.swp
+
+# Environment Secrets
+.env
+.env.local
+.env.*.local
+!.env.docker
+!.env.test
+!.env.dist
+
+# Docker
+docker-compose.override.yml
+
+# Node / Frontend (Client)
+client/node_modules/
+client/dist/
+client/build/
+client/coverage/
+client/.npm/
+client/*.log
+
+# Symfony / Backend (App)
+app/vendor/
+app/var/
+app/public/bundles/
+app/public/build/
+app/config/secrets/*
+!app/config/secrets/prod/prod.list.php
+app/phpunit.xml
+
+# Python / AI Service
+ai_service/__pycache__/
+ai_service/*.pyc
+ai_service/.venv/
+ai_service/venv/
+ai_service/.pytest_cache/
+ai_service/app/logs/
+ai_service/archive_logs_*/
+
+# Backups
+backups/
+*.gz
+*.sql
+
+# Agent / Brain
+.gemini/
+.agent/
+brain/

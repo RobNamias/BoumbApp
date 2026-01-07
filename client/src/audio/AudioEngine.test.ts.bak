@@ -1,0 +1,179 @@
+// @ts-nocheck
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import AudioEngine from './AudioEngine';
+import * as Tone from 'tone';
+
+// Comprehensive Tone.js Mock for Vitest
+vi.mock('tone', () => {
+    return {
+        // Functions
+        start: vi.fn().mockResolvedValue(undefined),
+        getContext: vi.fn(() => ({ state: 'suspended' })),
+        gainToDb: vi.fn(),
+
+        // Classes (Chainable Mocks)
+        Channel: vi.fn(function () {
+            const mock = {
+                toDestination: vi.fn().mockReturnThis(),
+                connect: vi.fn().mockReturnThis(),
+                volume: { rampTo: vi.fn() },
+                pan: { value: 0 },
+                mute: false,
+                solo: false
+            };
+            return mock;
+        }),
+        Sampler: vi.fn(function () {
+            const mock = {
+                connect: vi.fn().mockReturnThis(),
+                disconnect: vi.fn(),
+                chain: vi.fn().mockReturnThis(),
+                triggerAttack: vi.fn(),
+                dispose: vi.fn()
+            };
+            return mock;
+        }),
+        PolySynth: vi.fn(function () {
+            const mock = {
+                connect: vi.fn().mockReturnThis(),
+                disconnect: vi.fn(),
+                chain: vi.fn().mockReturnThis(),
+                triggerAttackRelease: vi.fn(),
+                releaseAll: vi.fn(),
+                dispose: vi.fn(),
+                set: vi.fn()
+            };
+            return mock;
+        }),
+        Part: vi.fn(function () {
+            return {
+                start: vi.fn(),
+                stop: vi.fn(),
+                dispose: vi.fn(),
+                loop: false,
+                loopEnd: 0
+            };
+        }),
+        // FX Mocks
+        Reverb: vi.fn(function () {
+            return { toDestination: vi.fn().mockReturnThis(), connect: vi.fn().mockReturnThis(), dispose: vi.fn(), disconnect: vi.fn() };
+        }),
+        FeedbackDelay: vi.fn(function () {
+            return { toDestination: vi.fn().mockReturnThis(), connect: vi.fn().mockReturnThis(), dispose: vi.fn(), disconnect: vi.fn() };
+        }),
+        Distortion: vi.fn(function () {
+            return { toDestination: vi.fn().mockReturnThis(), connect: vi.fn().mockReturnThis(), dispose: vi.fn(), disconnect: vi.fn() };
+        }),
+        Chorus: vi.fn(function () {
+            return { start: vi.fn().mockReturnThis(), toDestination: vi.fn().mockReturnThis(), connect: vi.fn().mockReturnThis(), dispose: vi.fn(), disconnect: vi.fn() };
+        }),
+        Synth: vi.fn(),
+
+        // Singleton Getters
+        getTransport: vi.fn(() => ({
+            start: vi.fn(),
+            stop: vi.fn(),
+            pause: vi.fn(),
+            bpm: { value: 120 },
+            setLoopPoints: vi.fn()
+        }))
+    };
+});
+
+describe('AudioEngine V2', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        AudioEngine.tracks.clear();
+        AudioEngine.started = false;
+        // @ts-ignore: private access
+        AudioEngine.master = undefined;
+    });
+
+    it('should initialize successfully', async () => {
+        const result = await AudioEngine.initialize();
+        expect(Tone.start).toHaveBeenCalled();
+        expect(result).toBe(true);
+        expect(AudioEngine.started).toBe(true);
+    });
+
+    it('should create a track via syncTrack', async () => {
+        await AudioEngine.syncTrack({
+            id: 'track-1',
+            type: 'sampler',
+            sampleUrl: 'kick',
+            mixerChannelId: 'insert-1',
+            instrument: { type: 'sampler' }
+        });
+
+        expect(AudioEngine.tracks.has('track-1')).toBe(true);
+        const track = AudioEngine.tracks.get('track-1');
+        expect(track?.type).toBe('sampler');
+        expect(Tone.Channel).toHaveBeenCalled();
+        expect(Tone.Sampler).toHaveBeenCalled();
+    });
+
+    it('should update mixer settings via syncTrack', async () => {
+        // Create first
+        await AudioEngine.syncTrack({
+            id: 'track-1',
+            type: 'sampler',
+            mixerChannelId: 'insert-1',
+            instrument: { type: 'sampler' }
+        });
+
+        const track = AudioEngine.tracks.get('track-1');
+        const channel = track!.channel;
+
+        // Update
+        await AudioEngine.syncTrack({
+            id: 'track-1',
+            type: 'sampler',
+            mixerChannelId: 'insert-1'
+        });
+
+        expect(channel.volume.rampTo).toHaveBeenCalled();
+        expect(channel.pan.value).toBe(0.5);
+        expect(channel.mute).toBe(true);
+        expect(channel.solo).toBe(true);
+    });
+
+    it('should schedule clips using Tone.Part', async () => {
+        await AudioEngine.syncTrack({ id: 'track-1', type: 'synth', mixerChannelId: 'insert-1', instrument: { type: 'synth', oscillatorType: 'sawtooth' } });
+
+        const clips = [
+            { time: '0:0:0', note: 'C4', duration: '8n', velocity: 1 }
+        ];
+
+        AudioEngine.setTrackClips('track-1', clips, 32);
+
+        expect(Tone.Part).toHaveBeenCalled();
+        expect(AudioEngine.tracks.get('track-1')?.part).toBeDefined();
+    });
+
+    it('should support legacy createTrack', () => {
+        AudioEngine.createTrack('legacy-kick', 'kick.wav');
+        expect(AudioEngine.tracks.has('legacy-kick')).toBe(true);
+        expect(AudioEngine.tracks.get('legacy-kick')?.type).toBe('sampler');
+    });
+
+    it('should rebuild track chain with effects', async () => {
+        // 1. Create Track
+        await AudioEngine.syncTrack({ id: 'track-fx', type: 'synth', mixerChannelId: 'insert-1', instrument: { type: 'synth' } });
+        const track = AudioEngine.tracks.get('track-fx');
+        expect(track).toBeDefined();
+
+        // 2. Add Effects
+        const effects: any[] = [
+            { id: 'fx1', type: 'reverb', enabled: true, params: { decay: 2 } },
+            { id: 'fx2', type: 'delay', enabled: true, params: { delayTime: '8n' } }
+        ];
+
+        AudioEngine.rebuildTrackChain('track-fx', effects);
+
+        // 3. Verify
+        expect(Tone.Reverb).toHaveBeenCalled();
+        expect(Tone.FeedbackDelay).toHaveBeenCalled();
+        expect(track!.effects.length).toBe(2);
+    });
+});
+

@@ -1,0 +1,19 @@
+{
+    "name": "boumbapp-root",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "up": "docker compose up -d",
+        "down": "docker compose down",
+        "stop": "docker compose stop",
+        "logs": "docker compose logs -f",
+        "ps": "docker compose ps",
+        "sh": "docker compose exec boumbapp_backend sh",
+        "cc": "docker compose exec boumbapp_backend bin/console cache:clear",
+        "vendor": "docker compose exec boumbapp_backend composer install",
+        "db:reset": "docker compose exec boumbapp_backend bin/console doctrine:database:drop --force --if-exists && docker compose exec boumbapp_backend bin/console doctrine:database:create && docker compose exec boumbapp_backend bin/console doctrine:migrations:migrate --no-interaction && docker compose exec boumbapp_backend bin/console doctrine:fixtures:load --no-interaction",
+        "db:diff": "docker compose exec boumbapp_backend bin/console make:migration",
+        "front:install": "cd client && npm install",
+        "front:dev": "cd client && npm run dev"
+    }
+}
