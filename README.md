@@ -98,14 +98,28 @@ A comprehensive User Manual is available directly within the application (click 
     cd BoumbApp
     ```
 
-2.  Lancer la stack avec Docker :
-    ```bash
-    docker compose up -d --build
-    ```
+2.  Lancer la stack (Choisir son mode) :
+
+    *   **Mode Lite / Découverte** (Recommandé) :
+        *Juste l'application, sans l'IA (gros téléchargement) ni les outils de dev.*
+        ```bash
+        docker compose up -d --build
+        ```
+
+    *   **Mode Producteur (Avec IA)** :
+        *Active les fonctionnalités d'IA Générative (Ollama + Magenta).*
+        ```bash
+        docker compose --profile ai up -d --build
+        ```
+
+    *   **Mode Full Dev (Tout Inclus)** :
+        *Avec IA + Outils de debug (Mailpit, Adminer, Backups).*
+        ```bash
+        docker compose --profile full up -d --build
+        ```
 
 3.  Accéder à l'application :
-    *   **App**: [https://localhost](https://localhost)
-    *   **API**: [https://localhost/api](https://localhost/api)
+    *   **App**: [https://localhost:5174](https://localhost:5174)
 
 ## 📖 Documentation
 

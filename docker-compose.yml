@@ -49,6 +49,7 @@ services:
   boumbapp_db_backup:
     image: prodrigestivill/postgres-backup-local
     container_name: boumbapp_db_backup
+    profiles: [ "tools", "full" ]
     restart: always
     volumes:
       - ./backups:/backups
@@ -67,6 +68,7 @@ services:
   boumbapp_mailpit:
     image: axllent/mailpit:latest
     container_name: boumbapp_mailpit
+    profiles: [ "tools", "full" ]
     ports:
       - "8025:8025" # UI Mailpit
       - "1025:1025" # SMTP
@@ -74,6 +76,7 @@ services:
   boumbapp_adminer:
     image: adminer:latest
     container_name: boumbapp_adminer
+    profiles: [ "tools", "full" ]
     ports:
       - "8081:8080"
     environment:
@@ -82,6 +85,7 @@ services:
   boumbapp_ai_engine:
     image: ollama/ollama:latest
     container_name: boumbapp_ai_engine
+    profiles: [ "ai", "full" ]
     ports:
       - "11434:11434"
     volumes:
@@ -91,6 +95,7 @@ services:
     build:
       context: ./ai_service
     container_name: boumbapp_ai_api
+    profiles: [ "ai", "full" ]
     ports:
       - "8002:8000"
     volumes:
