@@ -119,8 +119,7 @@ A comprehensive User Manual is available directly within the application (click 
         ```
 
 3.  Accéder à l'application :
-    *   **App**: [https://localhost](https://localhost)
-    *   **API**: [https://localhost/api](https://localhost/api)
+    *   **App**: [https://localhost:5174](https://localhost:5174)
 
 ## 📖 Documentation
 
