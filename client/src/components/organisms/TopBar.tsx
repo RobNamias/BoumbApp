@@ -163,9 +163,6 @@ const TopBar: React.FC = () => {
         useLoadingStore.getState().setLoading(true, 'Chargement du projet...');
         try {
             if (version && version.data) {
-                // Restore State (Hydration)
-                // Ensure backendId is preserved/restored if not in JSON
-                // We use selectedProjectId from state closure
                 const restoredData = { ...version.data, backendId: selectedProjectId };
                 setProject(restoredData);
                 if (restoredData.meta && restoredData.meta.bpm) {
