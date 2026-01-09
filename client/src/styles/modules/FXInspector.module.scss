@@ -155,24 +155,32 @@
 
         .params {
             padding: 12px;
-            padding-top: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            padding-top: 12px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
             animation: slideDown 0.2s ease-out;
 
             .paramRow {
                 display: flex;
                 flex-direction: column;
+                align-items: center;
                 gap: 4px;
+                text-align: center;
 
-                .labelRow {
-                    display: flex;
-                    justify-content: space-between;
+                .paramLabel {
                     font-size: 0.7rem;
                     color: #aaa;
                     text-transform: uppercase;
                     letter-spacing: 0.05em;
+                    margin-bottom: 2px;
+                }
+
+                .paramValue {
+                    font-size: 0.7rem;
+                    color: #fff;
+                    font-family: monospace;
+                    margin-top: 2px;
                 }
 
                 /* Custom Slider Styling */

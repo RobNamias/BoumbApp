@@ -3,6 +3,7 @@ import { useProjectStore } from '../../../store/projectStore';
 import type { EffectConfig } from '../../../store/projectStore';
 import styles from '../../../styles/modules/FXInspector.module.scss';
 import { Trash2, Power, Waves, Mic2, Zap, Radio, Activity, Filter, ChevronDown } from 'lucide-react';
+import Knob from '../../atoms/Knob';
 
 interface FXInspectorProps {
     channelId: string | null;
@@ -114,10 +115,15 @@ const FXInspector: React.FC<FXInspectorProps> = ({ channelId }) => {
         return 0;
     };
 
-    const getStep = (key: string): number => {
-        if (key === 'bits') return 1;
-        if (key === 'baseFrequency') return 10;
-        return 0.01;
+
+
+    const hexToRgb = (hex: string) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: Number.parseInt(result[1], 16),
+            g: Number.parseInt(result[2], 16),
+            b: Number.parseInt(result[3], 16)
+        } : null;
     };
 
     return (
@@ -132,17 +138,17 @@ const FXInspector: React.FC<FXInspectorProps> = ({ channelId }) => {
                     const isExpanded = expandedEffects.has(fx.id);
 
                     // Dynamic Glassmorphism Logic
-                    // User Request: "Moins c'est transparent (plus c'est solide/opaque), moins l'effet est appliqué"
-                    // Translation: Low Mix = Opaque/Boring. High Mix = Transparent/Glassy.
-                    // Implementation: 
-                    // Mix 0 -> Opacity 1 (Solid Dark Grey)
-                    // Mix 1 -> Opacity 0.3 (Glassy)
-                    // We apply this to the background color's alpha channel approximately using rgba.
-                    // Alternatively, we use `rgba(30, 30, 30, ${1 - mixVal * 0.7})`
-                    const bgOpacity = 1 - (mixVal * 0.7); // 0 -> 1, 1 -> 0.3
+                    // User Request: Tendre vers la couleur de l'effet
+                    const rgb = hexToRgb(config.color);
+                    const baseOpacity = 0.1;
+                    const variableOpacity = mixVal * 0.4; // max 0.5 total opacity
+                    const bgStyle = rgb
+                        ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${baseOpacity + variableOpacity})`
+                        : `rgba(30, 30, 30, ${1 - mixVal * 0.7})`;
+
                     const cardStyle = {
                         borderLeftColor: fx.enabled ? config.color : '#444',
-                        background: fx.enabled ? `rgba(30, 30, 30, ${bgOpacity})` : '#1a1a1a',
+                        background: fx.enabled ? bgStyle : '#1a1a1a',
                         filter: fx.enabled ? 'none' : 'grayscale(100%) opacity(0.5)',
                         '--accent-color': config.color
                     } as React.CSSProperties;
@@ -195,19 +201,16 @@ const FXInspector: React.FC<FXInspectorProps> = ({ channelId }) => {
                                 <div className={styles.params}>
                                     {Object.entries(fx.params).map(([key, val]) => (
                                         <div key={key} className={styles.paramRow}>
-                                            <div className={styles.labelRow}>
-                                                <span>{key}</span>
-                                                <span>{val.toFixed(2)}</span>
-                                            </div>
-                                            <input
-                                                type="range"
+                                            <span className={styles.paramLabel}>{key}</span>
+                                            <Knob
+                                                value={val}
                                                 min={getMinValue(key)}
                                                 max={getMaxValue(key)}
-                                                step={getStep(key)}
-                                                value={val}
-                                                onChange={(e) => handleParamChange(fx.id, key, Number.parseFloat(e.target.value))}
-                                                {...{ 'style': { '--accent-color': config.color } as React.CSSProperties }}
+                                                size={30}
+                                                onChange={(v) => handleParamChange(fx.id, key, v)}
+                                                style={{ color: config.color }}
                                             />
+                                            <span className={styles.paramValue}>{val.toFixed(2)}</span>
                                         </div>
                                     ))}
                                 </div>
