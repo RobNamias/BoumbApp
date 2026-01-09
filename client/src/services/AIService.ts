@@ -63,11 +63,13 @@ export const aiService = {
      */
     sendFeedback: async (requestId: string, rating: number, comment: string = "") => {
         try {
-            await fetch(`${API_URL}/feedback`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ request_id: requestId, rating, comment })
-            });
+            // [LITE] Disabled for static version
+            // await fetch(`${API_URL}/feedback`, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ request_id: requestId, rating, comment })
+            // });
+            console.log("[LITE] Feedback logged:", { requestId, rating, comment });
         } catch (e) {
             console.warn("Failed to send feedback", e);
         }

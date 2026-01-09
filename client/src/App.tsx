@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/templates/Layout';
 import JuicyBoxPage from './pages/JuicyBoxPage';
 import SynthLabPage from './pages/SynthLabPage';
@@ -27,7 +27,7 @@ function App() {
   };
 
   return (
-    <Router>
+    <HashRouter>
       <Routes>
         {/* Root Route: Shows Hero if not ready, otherwise redirects to App */}
         <Route
@@ -58,7 +58,7 @@ function App() {
         {/* Catch-all: Redirect to Root */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
 

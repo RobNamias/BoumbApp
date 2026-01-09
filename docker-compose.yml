@@ -1,24 +1,4 @@
 services:
-  boumbapp_backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: dev
-    container_name: boumbapp_backend
-    volumes:
-      - ./app:/app
-    ports:
-      - "8001:8080" # http://localhost:8080
-    env_file:
-      - .env.docker
-    environment:
-      APP_ENV: dev
-      SERVER_NAME: :8080
-      CADDY_MERCURE: "off"
-      XDEBUG_MODE: "${XDEBUG_MODE:-off}" # active avec XDEBUG_MODE=debug
-    depends_on:
-      - boumbapp_database
-
   boumbapp_frontend:
     build:
       context: ./client
@@ -31,80 +11,15 @@ services:
       - /app/node_modules
     environment:
       - WATCHPACK_POLLING=true
-    depends_on:
-      - boumbapp_backend
 
-  boumbapp_database:
-    image: postgres:16-alpine
-    container_name: boumbapp_database
-    environment:
-      POSTGRES_DB: boumbappdb
-      POSTGRES_PASSWORD: secret
-      POSTGRES_USER: JeanTreu
-    ports:
-      - "5432:5432"
-    volumes:
-      - dbdata:/var/lib/postgresql/data
-
-  boumbapp_db_backup:
-    image: prodrigestivill/postgres-backup-local
-    container_name: boumbapp_db_backup
-    profiles: [ "tools", "full" ]
-    restart: always
-    volumes:
-      - ./backups:/backups
-    depends_on:
-      - boumbapp_database
-    environment:
-      - POSTGRES_HOST=boumbapp_database
-      - POSTGRES_DB=boumbappdb
-      - POSTGRES_USER=JeanTreu
-      - POSTGRES_PASSWORD=secret
-      - SCHEDULE=@daily
-      - BACKUP_KEEP_DAYS=7
-      - BACKUP_KEEP_WEEKS=4
-      - BACKUP_ON_START=TRUE
-
-  boumbapp_mailpit:
-    image: axllent/mailpit:latest
-    container_name: boumbapp_mailpit
-    profiles: [ "tools", "full" ]
-    ports:
-      - "8025:8025" # UI Mailpit
-      - "1025:1025" # SMTP
-
-  boumbapp_adminer:
-    image: adminer:latest
-    container_name: boumbapp_adminer
-    profiles: [ "tools", "full" ]
-    ports:
-      - "8081:8080"
-    environment:
-      ADMINER_DEFAULT_SERVER: boumbapp_database
-
-  boumbapp_ai_engine:
-    image: ollama/ollama:latest
-    container_name: boumbapp_ai_engine
-    profiles: [ "ai", "full" ]
-    ports:
-      - "11434:11434"
-    volumes:
-      - ${OLLAMA_MODELS_PATH}:/root/.ollama
-
-  boumbapp_ai_api:
-    build:
-      context: ./ai_service
-    container_name: boumbapp_ai_api
-    profiles: [ "ai", "full" ]
-    ports:
-      - "8002:8000"
-    volumes:
-      - ./ai_service:/app
-    environment:
-      OLLAMA_HOST: http://boumbapp_ai_engine:11434
-      TZ: Europe/Paris
-    depends_on:
-      - boumbapp_ai_engine
+#  boumbapp_backend: ... (Removed for GH Pages Branch)
+#  boumbapp_database: ... (Removed for GH Pages Branch)
+#  boumbapp_db_backup: ... (Removed for GH Pages Branch)
+#  boumbapp_mailpit: ... (Removed for GH Pages Branch)
+#  boumbapp_adminer: ... (Removed for GH Pages Branch)
+#  boumbapp_ai_engine: ... (Removed for GH Pages Branch)
+#  boumbapp_ai_api: ... (Removed for GH Pages Branch)
 
 volumes:
-  dbdata:
+  # dbdata: (Removed for GH Pages Branch)
+
