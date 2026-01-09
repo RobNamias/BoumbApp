@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import audioInstance from '../audio/AudioEngine';
 import { MVP_LIMITS } from '../config/constants';
 
+
 // --- Interfaces (V2 - Track First Architecture) ---
 
 export interface Note {
@@ -752,109 +753,59 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     // --- Async Actions ---
 
     fetchAllProjects: async () => {
-        useLoadingStore.getState().setLoading(true, 'Chargement des projets...');
-        const token = localStorage.getItem('token');
-        if (!token) {
-            useLoadingStore.getState().setLoading(false);
-            return;
-        }
-
         try {
-            const response = await fetch('http://localhost:8000/api/projects', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                set({ savedProjects: data });
-            }
+            const { projectService } = await import('../services/projectService');
+            const data = await projectService.getAllProjects();
+            // @ts-ignore
+            set({ savedProjects: data });
         } catch (error) {
             console.error("Failed to fetch projects", error);
-        } finally {
-            useLoadingStore.getState().setLoading(false);
         }
     },
 
     fetchProjectVersions: async (projectId: string) => {
-        useLoadingStore.getState().setLoading(true, 'Chargement des versions...');
-        const token = localStorage.getItem('token');
-        if (!token) {
-            useLoadingStore.getState().setLoading(false);
-            return;
-        }
-
-        try {
-            const response = await fetch(`http://localhost:8000/api/projects/${projectId}/versions`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                // Assumes caller handles data or we store it somewhere? 
-                // For now, let's just log or return it if we could. 
-                // But this is a void action. 
-                // We'll leave it as is for now, main point is Loading UI.
-            }
-        } catch (e) {
-            console.error(e);
-        } finally {
-            useLoadingStore.getState().setLoading(false);
-        }
+        console.log("[Lite] Fetch versions for", projectId);
     },
 
     saveProject: async () => {
-        useLoadingStore.getState().setLoading(true, 'Sauvegarde du projet...');
-        const token = localStorage.getItem('token');
         const state = get();
-        if (!token) {
-            useLoadingStore.getState().setLoading(false);
-            return;
-        }
-
         try {
-            // Check if existing project (update) or new (create)
-            // For now, let's assume always CREATE a new version or UPDATE based on ID
-            // Simple implementation: POST to /api/projects
-            const response = await fetch('http://localhost:8000/api/projects', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(state.project)
-            });
+            const { projectService } = await import('../services/projectService');
+            const project = state.project;
+            let projectId = project.id;
 
-            if (response.ok) {
-                // Should probably update current project ID from response?
-                // const data = await response.json();
-                console.log("Project Saved!");
+            if (projectId === 'default') {
+                // Create new
+                const newProj = await projectService.createProject(project.meta.title, project);
+                projectId = newProj.id;
+
+                // Update ID and Meta
+                set((s) => ({
+                    project: {
+                        ...s.project,
+                        id: projectId,
+                        // Update version if needed
+                    }
+                }));
+            } else {
+                await projectService.saveVersion(projectId, project);
             }
+            console.log("Project Saved! ID:", projectId);
         } catch (e) {
             console.error("Save Failed", e);
-        } finally {
-            useLoadingStore.getState().setLoading(false);
         }
     },
 
     loadProjectVersion: async (versionId: string) => {
-        useLoadingStore.getState().setLoading(true, 'Chargement de la version...');
-        const token = localStorage.getItem('token');
-        if (!token) {
-            useLoadingStore.getState().setLoading(false);
-            return;
-        }
-
         try {
-            // Example endpoint: detailed version fetch
-            const response = await fetch(`http://localhost:8000/api/projects/versions/${versionId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (response.ok) {
-                const data = await response.json(); // ProjectData
-                get().setProject(data); // Re-use synchronous setter
+            const { projectService } = await import('../services/projectService');
+            // In Lite mode, we trust versionId is either a project ID or version ID we can resolve
+            const version = await projectService.getLatestVersion(versionId);
+            if (version && version.data) {
+                get().setProject(version.data);
             }
         } catch (e) {
             console.error("Load Failed", e);
-        } finally {
-            useLoadingStore.getState().setLoading(false);
         }
     },
 

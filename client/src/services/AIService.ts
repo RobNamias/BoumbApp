@@ -28,6 +28,9 @@ export const aiService = {
     /**
      * Call AI to generate a melody
      */
+    /**
+     * Call AI to generate a melody
+     */
     generateMelody: async (
         prompt: string,
         currentBpm: number,
@@ -35,34 +38,24 @@ export const aiService = {
         options?: GenerationOptions
     ): Promise<GenerateResponse> => {
 
-        try {
-            const payload = {
-                prompt,
-                bpm: currentBpm,
-                global_key: globalKey, // Pass project context
-                duration: options?.duration || 32, // Default to 32 if not specified
-                options: options || null
-            };
+        // Mock implementation for Lite Mode
+        await new Promise((r) => setTimeout(r, 600));
 
-            const response = await fetch(`${API_URL}/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.message || 'AI Generation Failed');
-            }
-
-            return await response.json();
-
-        } catch (error) {
-            console.error("AI Service Error:", error);
-            throw error;
-        }
+        return {
+            request_id: "mock-id-" + Date.now(),
+            analysis: {
+                root: globalKey.root,
+                scale_type: globalKey.scale,
+                bpm: currentBpm
+            },
+            notes: [
+                { time: 0, midi: 60, duration: 0.25, velocity: 0.9 },
+                { time: 0.25, midi: 62, duration: 0.25, velocity: 0.9 },
+                { time: 0.5, midi: 64, duration: 0.25, velocity: 0.9 },
+                { time: 0.75, midi: 65, duration: 0.25, velocity: 0.9 },
+                { time: 1.0, midi: 67, duration: 0.5, velocity: 0.9 },
+            ]
+        };
     },
 
     /**
