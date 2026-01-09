@@ -1,3 +1,0 @@
-# Contexte Détaillé
-
-*À rédiger...*
