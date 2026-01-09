@@ -24,9 +24,9 @@ export const projectService = {
         return read();
     },
 
-    getLatestVersion: async (projectId: string): Promise<any | null> => {
+    getLatestVersion: async (projectId: string | number): Promise<any | null> => {
         const projects = read();
-        const project = projects.find((p: any) => p.id === projectId);
+        const project = projects.find((p: any) => p.id === String(projectId));
         // In our simplified mock, the project directly contains the data or the latest version data
         // Let's assume the project structure in LS stores the latest 'data' directly or in a versions array.
         // For this simple mock, let's assume 'data' is top level or we return the project itself if it matches structure.
@@ -39,6 +39,19 @@ export const projectService = {
             data: project.data,
             createdAt: new Date(project.updatedAt).toISOString()
         };
+    },
+
+    getProjectVersions: async (projectId: string | number): Promise<any[]> => {
+        const projects = read();
+        const project = projects.find((p: any) => p.id === String(projectId));
+        if (!project) return [];
+        // Return a single version representing the current state
+        return [{
+            id: 1,
+            versionNumber: 1,
+            data: project.data,
+            createdAt: new Date(project.updatedAt).toISOString()
+        }];
     },
 
     createProject: async (name: string, data: ProjectData) => {
@@ -56,9 +69,9 @@ export const projectService = {
         return newProject;
     },
 
-    saveVersion: async (projectId: string, data: ProjectData) => {
+    saveVersion: async (projectId: string | number, data: ProjectData) => {
         const projects = read();
-        const idx = projects.findIndex((p: any) => p.id === projectId);
+        const idx = projects.findIndex((p: any) => p.id === String(projectId));
 
         if (idx >= 0) {
             projects[idx] = { ...projects[idx], data, updatedAt: Date.now() };

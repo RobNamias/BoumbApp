@@ -3,7 +3,7 @@ import TrackHeader, { type Track } from '../../molecules/TrackHeader';
 import Sequencer from './Sequencer';
 
 
-import { Plus } from 'lucide-react';
+// import { Plus } from 'lucide-react';
 import '../../../styles/components/_juicy-box.scss'; // Adjusted path
 
 import { useAppStore } from '../../../store/useAppStore'; // Adjusted path

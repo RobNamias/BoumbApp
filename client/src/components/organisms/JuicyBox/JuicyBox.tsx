@@ -39,7 +39,7 @@ const JuicyBox: React.FC = () => {
         addNote,
         removeNote,
         updateNote,
-        addTrack
+        // addTrack
     } = useProjectStore();
 
     // 2. Active Pattern Logic

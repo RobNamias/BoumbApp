@@ -76,7 +76,7 @@ class AudioEngine {
     /**
      * Helper to create a Mixer Strip
      */
-    private _createMixerStrip(id: string): MixerStrip {
+    private _createMixerStrip(_id: string): MixerStrip {
         // FORCE Stereo: prevents Tone.js from downmixing to Mono if input is Mono (e.g. Sampler)
         // We set properties explicitly after instantiation since Tone.Gain constructor types are strict.
         const input = new Tone.Gain(1);
@@ -608,6 +608,55 @@ class AudioEngine {
             console.error(`[AudioEngine] Error creating effect ${fx.type}:`, e);
             return null;
         }
+    }
+
+    // Optimized: Update Params without destroying nodes
+    updateChannelEffectParams(_channelId: string, _effectId: string, _params: any) {
+        // Implementation stub or logic if needed, but the main one used is updateChannelEffect below
+    }
+
+    updateEffectNodeParams(node: any, params: any) {
+        // Generic Param Updater based on Node Type
+        if (params.mix !== undefined && node.wet) node.wet.value = params.mix;
+
+        // Reverb
+        if (node.name === 'Reverb') {
+            if (params.decay) node.decay = params.decay;
+            if (params.preDelay) node.preDelay = params.preDelay;
+        }
+        // FeedbackDelay
+        else if (node.name === 'FeedbackDelay') {
+            if (params.time) node.delayTime.value = params.time;
+            if (params.feedback) node.feedback.value = params.feedback;
+        }
+        // Distortion
+        else if (node.name === 'Distortion') {
+            if (params.amount) node.distortion = params.amount;
+        }
+        // Chorus
+        else if (node.name === 'Chorus') {
+            if (params.frequency) node.frequency.value = params.frequency;
+            if (params.delayTime) node.delayTime = params.delayTime;
+            if (params.depth) node.depth = params.depth;
+        }
+        // BitCrusher
+        else if (node.name === 'BitCrusher') {
+            if (params.bits) node.bits.value = params.bits;
+        }
+        // AutoFilter
+        else if (node.name === 'AutoFilter') {
+            if (params.frequency) node.frequency.value = params.frequency;
+            if (params.depth) node.depth.value = params.depth;
+            if (params.baseFrequency) node.baseFrequency = params.baseFrequency;
+        }
+    }
+
+    // Actual Public Method
+    updateChannelEffect(channelId: string, effectIndex: number, params: any) {
+        const nodes = this.channelEffects.get(channelId);
+        if (!nodes || !nodes[effectIndex]) return;
+
+        this.updateEffectNodeParams(nodes[effectIndex], params);
     }
 
     // --- Transport Logic ---

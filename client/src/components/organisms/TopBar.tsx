@@ -9,9 +9,9 @@ import Knob from '../atoms/Knob';
 import Led from '../atoms/Led';
 import Modal from '../molecules/Modal';
 import ConfirmModal from '../molecules/ConfirmModal';
-import LoginModal from './LoginModal';
+// LoginModal removed
 import DropdownMenu from '../molecules/DropdownMenu';
-import { LogOut, Save, FolderOpen, Globe, FilePlus, Download, HelpCircle, Book, Info, LogIn } from 'lucide-react';
+import { Save, FolderOpen, Globe, FilePlus, Download, HelpCircle, Book, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import styles from '../../styles/modules/TopBar.module.scss';
@@ -42,17 +42,16 @@ const TopBar: React.FC = () => {
     } = useAppStore();
 
     const { project, setProject } = useProjectStore();
-    const { user, logout } = useAuthStore();
+    const { user } = useAuthStore();
 
     // Local State for Modals
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
     const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
     const [isConfirmNewProjectOpen, setIsConfirmNewProjectOpen] = useState(false);
     const [projectNameInput, setProjectNameInput] = useState('');
     const [projectList, setProjectList] = useState<ProjectSummary[]>([]);
-    const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [versionList, setVersionList] = useState<any[]>([]); // Should import ProjectVersion type
     const [notification, setNotification] = useState<string | null>(null);
 
@@ -80,7 +79,6 @@ const TopBar: React.FC = () => {
     const handleSaveClick = async () => {
         if (!user) {
             showNotification(t('topbar.notifications.save_auth'));
-            setIsLoginModalOpen(true);
             return;
         }
 
@@ -145,7 +143,6 @@ const TopBar: React.FC = () => {
     const handleLoadClick = async () => {
         if (!user) {
             showNotification(t('topbar.notifications.load_auth'));
-            setIsLoginModalOpen(true);
             return;
         }
 
@@ -310,29 +307,20 @@ const TopBar: React.FC = () => {
                     </button>
 
                     {user ? (
-                        <>
-                            <div className={styles.userInfo}>
-                                <span className={styles.username}>{user.username}</span>
-                            </div>
-                            <button onClick={() => { logout(); useProjectStore.getState().reset(); }} title={t('topbar.logout')} className={styles.logoutBtn}>
-                                <LogOut size={18} />
-                            </button>
-                        </>
+                        <div className={styles.userInfo}>
+                            <span className={styles.username}>{user.username}</span>
+                        </div>
                     ) : (
-                        <button
-                            onClick={() => setIsLoginModalOpen(true)}
-                            className={styles.loginIconBtn}
-                            title={t('topbar.login')}
-                        >
-                            <LogIn size={18} />
-                        </button>
+                        <div className={styles.userInfo}>
+                            <span className={styles.username}>Guest</span>
+                        </div>
                     )}
                 </div>
             </div>
 
             {/* --- Modals --- */}
 
-            <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
+
 
             <ConfirmModal
                 isOpen={isConfirmNewProjectOpen}

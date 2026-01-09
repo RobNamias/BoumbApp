@@ -83,7 +83,7 @@ export interface TimelineClip {
 
 export interface ProjectData {
     id: string; // Internal UUID
-    backendId?: number; // Symfony SQL ID (if saved)
+    backendId?: string | number; // Symfony SQL ID (if saved) or UUID (lite)
     version: number;
     meta: {
         title: string;
@@ -205,11 +205,11 @@ const DEFAULT_PROJECT: ProjectData = {
     },
     tracks: {
         // --- 5 DRUM TRACKS (MVP - 808 Kit) ---
-        'track-kick': createDefaultTrack('track-kick', 'Kick', 'drums', 'sampler', 'insert-1', 'samples/kits/808/Kick.ogg'),
-        'track-snare': createDefaultTrack('track-snare', 'Snare', 'drums', 'sampler', 'insert-2', 'samples/kits/808/Snare.ogg'),
-        'track-hhc': createDefaultTrack('track-hhc', 'HiHat C', 'drums', 'sampler', 'insert-3', 'samples/kits/808/ClosedHat.ogg'),
-        'track-hho': createDefaultTrack('track-hho', 'HiHat O', 'drums', 'sampler', 'insert-4', 'samples/kits/808/OpenHat.ogg'),
-        'track-perc1': createDefaultTrack('track-perc1', 'Crash', 'drums', 'sampler', 'insert-5', 'samples/kits/808/Crash.ogg'),
+        'track-kick': createDefaultTrack('track-kick', 'Kick', 'drums', 'sampler', 'insert-1', import.meta.env.BASE_URL + 'samples/kits/808/Kick.ogg'),
+        'track-snare': createDefaultTrack('track-snare', 'Snare', 'drums', 'sampler', 'insert-2', import.meta.env.BASE_URL + 'samples/kits/808/Snare.ogg'),
+        'track-hhc': createDefaultTrack('track-hhc', 'HiHat C', 'drums', 'sampler', 'insert-3', import.meta.env.BASE_URL + 'samples/kits/808/ClosedHat.ogg'),
+        'track-hho': createDefaultTrack('track-hho', 'HiHat O', 'drums', 'sampler', 'insert-4', import.meta.env.BASE_URL + 'samples/kits/808/OpenHat.ogg'),
+        'track-perc1': createDefaultTrack('track-perc1', 'Crash', 'drums', 'sampler', 'insert-5', import.meta.env.BASE_URL + 'samples/kits/808/Crash.ogg'),
 
         // --- 2 MELODY TRACKS ---
         'track-lead': createDefaultTrack('track-lead', 'Lead Synth', 'melody', 'synth', 'insert-9'),
@@ -529,7 +529,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             else if (groupType === 'groups') mixer.groups[channelId] = newChannel;
             else if (groupType === 'inserts') mixer.inserts[channelId] = newChannel;
 
-            // TODO: Trigger Audio Engine Rebuild
             audioInstance.rebuildChannelChain(channelId, newChannel.effects);
 
             return { project: { ...state.project, mixer } };
@@ -577,8 +576,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             else if (groupType === 'groups') mixer.groups[channelId] = newChannel;
             else if (groupType === 'inserts') mixer.inserts[channelId] = newChannel;
 
-            // TODO: Update Audio Engine
-            audioInstance.rebuildChannelChain(channelId, newChannel.effects);
+            // AUDIO ENGINE OPTIMIZATION
+            // If only params changed, use lightweight update.
+            // If type or enabled state changed, we must rebuild the chain.
+            if (updates.params && !updates.type && updates.enabled === undefined) {
+                const effectIndex = newChannel.effects.findIndex(fx => fx.id === effectId);
+                if (effectIndex !== -1) {
+                    audioInstance.updateChannelEffect(channelId, effectIndex, updates.params);
+                } else {
+                    audioInstance.rebuildChannelChain(channelId, newChannel.effects);
+                }
+            } else {
+                // Structural change (Type change, Enable/Disable, etc.)
+                audioInstance.rebuildChannelChain(channelId, newChannel.effects);
+            }
 
             return { project: { ...state.project, mixer } };
         });
@@ -604,7 +615,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             else if (groupType === 'groups') mixer.groups[channelId] = newChannel;
             else if (groupType === 'inserts') mixer.inserts[channelId] = newChannel;
 
-            // TODO: Rebuild Chain
+
             audioInstance.rebuildChannelChain(channelId, newChannel.effects);
 
             return { project: { ...state.project, mixer } };

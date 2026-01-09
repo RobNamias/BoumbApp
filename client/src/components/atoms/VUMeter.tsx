@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import audioInstance from '../../audio/AudioEngine';
-import * as Tone from 'tone';
+// import * as Tone from 'tone';
 
 interface VUMeterProps {
     trackId: string;

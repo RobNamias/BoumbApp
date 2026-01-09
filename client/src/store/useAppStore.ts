@@ -37,6 +37,7 @@ interface AppState {
 
     // Bus Controls
     juicyVolume: number;
+    synthVolume: number;
     setJuicyVolume: (volume: number) => void;
     setSynthVolume: (volume: number) => void;
 
@@ -111,12 +112,13 @@ export const useAppStore = create<AppState>((set) => ({
 
     // New Bus Controls
     juicyVolume: 0.8,
+    synthVolume: 0.8,
     setJuicyVolume: (volume) => {
         set({ juicyVolume: volume });
         audioInstance.setChannelVolume('group-1', volume); // Map Juicy to Group 1
     },
     setSynthVolume: (volume) => {
-        // set({ synthVolume: volume }); // Removed from state
+        set({ synthVolume: volume });
         audioInstance.setChannelVolume('group-2', volume); // Map Synth to Group 2
     },
 }));

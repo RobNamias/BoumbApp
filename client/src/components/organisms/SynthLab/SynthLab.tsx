@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../../../styles/modules/SynthLab.module.scss';
 import { useProjectStore } from '../../../store/projectStore';
 import { useAppStore } from '../../../store/useAppStore';
@@ -7,8 +7,7 @@ import { useProjectAudio } from '../../../hooks/useProjectAudio';
 import PatternSelector from '../JuicyBox/PatternSelector'; // Reuse!
 import PianoRoll from '../PianoRoll/PianoRoll';
 import SynthPanel from '../SynthPanel/SynthPanel';
-import { Plus, Sparkles, ChevronRight, FlaskConical } from 'lucide-react';
-import AIComposerPopover from '../AIComposer/AIComposerPopover';
+import { Plus, ChevronRight, FlaskConical } from 'lucide-react';
 import Knob from '../../atoms/Knob';
 import Led from '../../atoms/Led';
 import DragInput from '../../atoms/DragInput';
@@ -35,9 +34,6 @@ const SynthLab: React.FC = () => {
 
     // --- Local State ---
     const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
-    const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-    const aiTriggerRef = useRef<HTMLButtonElement>(null);
-    const { setClip } = useProjectStore();
 
     // --- Initialization & Pattern Management ---
     const currentPatternId = activePatterns.melody;
@@ -112,27 +108,6 @@ const SynthLab: React.FC = () => {
                 </div>
 
                 <div style={{ position: 'relative' }}>
-                    <button
-                        ref={aiTriggerRef}
-                        className={`${styles.aiButton} ${!selectedTrackId ? styles.disabled : ''}`}
-                        onClick={() => selectedTrackId && setIsAIModalOpen(!isAIModalOpen)}
-                        title={selectedTrackId ? "Generate Melody w/ AI" : "Select a track first"}
-                        disabled={!selectedTrackId}
-                    >
-                        <Sparkles size={16} />
-                        <span>AI Composer</span>
-                    </button>
-
-                    {isAIModalOpen && selectedTrackId && (
-                        <AIComposerPopover
-                            onClose={() => setIsAIModalOpen(false)}
-                            onGenerated={(notes, requestId) => {
-                                setClip(currentPatternId, selectedTrackId, notes);
-                                console.log("AI Request Success:", requestId);
-                                // Popover handles its own state switch to feedback
-                            }}
-                        />
-                    )}
                 </div>
             </ModuleHeader>
 

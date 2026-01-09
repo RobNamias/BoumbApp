@@ -18,6 +18,7 @@ const Knob: React.FC<KnobProps> = ({
     size = 60,
     label,
     onChange,
+    hideLabel, // Extract to prevent DOM leak
     ...props
 }) => {
     const knobRef = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ const Knob: React.FC<KnobProps> = ({
     }, [isDragging, max, min, onChange]);
 
     return (
-         
+
         <div
             className={`knob ${isDragging ? 'knob--active' : ''}`}
             role="slider"

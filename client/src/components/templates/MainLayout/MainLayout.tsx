@@ -91,14 +91,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             // - Just fill tracks 1-4 with Kick, Snare, CH, OH.
 
             // Hardcoded mapping for MVP (Standard 808/909 layout)
-            const map: Record<string, string> = {
+            /* const map: Record<string, string> = {
                 'Kick': 'Kick',
                 'Snare': 'Snare',
                 'ClosedHat': 'ClosedHat', // or ClHat
                 'OpenHat': 'OpenHat',     // or OpHat
                 'Crash': 'Crash',
                 'Tom': 'Tom'
-            };
+            }; */
 
             // Needs access to existing tracks to find IDs by Name or Index??
             // We can't easily access state inside this callback if we don't grab it via hook.

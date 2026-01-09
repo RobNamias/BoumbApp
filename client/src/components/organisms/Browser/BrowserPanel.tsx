@@ -40,7 +40,13 @@ const BrowserPanel: React.FC = () => {
 
         // Fetch kits.json from public folder
         useLoadingStore.getState().setLoading(true, 'Chargement de la bibliothèque...');
-        fetch('/samples/kits.json')
+        const baseUrl = import.meta.env.BASE_URL;
+        // Ensure valid path concatenation
+        const manifestUrl = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}samples/kits.json`;
+
+        console.log("Fetching manifest from:", manifestUrl);
+
+        fetch(manifestUrl)
             .then(res => {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 return res.json();
@@ -104,22 +110,32 @@ const BrowserPanel: React.FC = () => {
                         {/* Samples List */}
                         {expandedKits[kitId] && (
                             <div className={styles.sampleList}>
-                                {Object.entries(kit.samples).map(([type, path]) => (
-                                    <DraggableResource
-                                        key={`${kitId}-${type}`}
-                                        id={`sample-${kitId}-${type}`}
-                                        data={{ type: 'sample', kitId, sampleType: type, path: path }}
-                                        className={styles.sampleItem}
-                                    >
-                                        <div
-                                            style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}
-                                            onClick={() => audioInstance.previewSample(path)} // Preview on Click
+                                {Object.entries(kit.samples).map(([type, path]) => {
+                                    // Prepend BASE_URL to ensure path is absolute relative to app root
+                                    const baseUrl = import.meta.env.BASE_URL;
+                                    // Remove leading slash from path if present to avoid double slash if needed, 
+                                    // but kits.json usually has relative paths like "samples/..."
+                                    // If baseUrl is "/" and path is "samples/...", result "/samples/..."
+                                    // If baseUrl is "/BoumbApp/" and path is "samples/...", result "/BoumbApp/samples/..."
+                                    const fullPath = `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}${path}`;
+
+                                    return (
+                                        <DraggableResource
+                                            key={`${kitId}-${type}`}
+                                            id={`sample-${kitId}-${type}`}
+                                            data={{ type: 'sample', kitId, sampleType: type, path: fullPath }}
+                                            className={styles.sampleItem}
                                         >
-                                            <FileAudio size={12} color="#888" />
-                                            <span>{SAMPLE_TYPE_TRANSLATIONS[type] || type}</span>
-                                        </div>
-                                    </DraggableResource>
-                                ))}
+                                            <div
+                                                style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}
+                                                onClick={() => audioInstance.previewSample(fullPath)} // Preview on Click
+                                            >
+                                                <FileAudio size={12} color="#888" />
+                                                <span>{SAMPLE_TYPE_TRANSLATIONS[type] || type}</span>
+                                            </div>
+                                        </DraggableResource>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

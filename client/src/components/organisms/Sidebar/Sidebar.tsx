@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drum, Music, Sliders, Hexagon, PlayCircle, Package } from 'lucide-react';
+import { Drum, Music, Sliders, PlayCircle, Package } from 'lucide-react';
 import styles from '../../../styles/modules/Sidebar.module.scss';
 
 interface SidebarProps {

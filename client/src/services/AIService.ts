@@ -4,7 +4,7 @@
 // Access Environment Variable (Vite)
 // In development with Docker, we might need to target localhost:8002 directly
 // or use a proxy. For now, we hardcode the mapped port or use VITE_API_URL.
-const API_URL = import.meta.env.VITE_AI_API_URL || 'http://localhost:8002/api/v1';
+// const API_URL = import.meta.env.VITE_AI_API_URL || 'http://localhost:8002/api/v1';
 
 export interface GenerationOptions {
     root?: string;
@@ -32,10 +32,10 @@ export const aiService = {
      * Call AI to generate a melody
      */
     generateMelody: async (
-        prompt: string,
+        _prompt: string,
         currentBpm: number,
         globalKey: { root: string, scale: string },
-        options?: GenerationOptions
+        _options?: GenerationOptions
     ): Promise<GenerateResponse> => {
 
         // Mock implementation for Lite Mode

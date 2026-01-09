@@ -19,9 +19,10 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
     persist(
         (set) => ({
-            token: null,
-            user: null,
-            isAuthenticated: false,
+            // DEMO MODE: Start with a demo user or allow easy login
+            token: 'demo-token',
+            user: { id: 1, email: 'producer@boumb.app', username: 'Demo Producer', roles: ['ROLE_USER'] },
+            isAuthenticated: true,
             login: (token, user) => set({ token, user, isAuthenticated: true }),
             logout: () => set({ token: null, user: null, isAuthenticated: false }),
         }),
