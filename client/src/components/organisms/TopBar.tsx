@@ -173,8 +173,7 @@ const TopBar: React.FC = () => {
                 setSelectedProjectId(null);
                 setVersionList([]);
                 showNotification(t('topbar.notifications.loaded', { name: projectNameInput, version: version.versionNumber }));
-                // Stop playback to avoid glitches
-                stop();
+                // Stop playback to avoid glitches                stop();
             } else {
                 showNotification('No content for this version');
             }
