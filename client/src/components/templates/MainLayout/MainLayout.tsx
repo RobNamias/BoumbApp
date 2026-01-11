@@ -2,22 +2,17 @@ import React, { useState } from 'react';
 import styles from '../../../styles/modules/MainLayout.module.scss';
 import Sidebar from '../../organisms/Sidebar/Sidebar';
 import TopBar from '../../organisms/TopBar';
-import SynthLabPage from '../../../pages/SynthLabPage';
-import Timeline from '../../organisms/Timeline';
 import { useProjectStore } from '../../../store/projectStore';
 import BrowserPanel from '../../organisms/Browser/BrowserPanel';
 import { DndContext, useSensor, useSensors, PointerSensor } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import GlobalLoader from '../../atoms/GlobalLoader';
-import MixerBoard from '../../organisms/Mixer/MixerBoard';
 
 interface MainLayoutProps {
     children?: React.ReactNode;
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-    // View State (Local for now, could be in SessionStore)
-    const [currentView, setCurrentView] = useState<'skyline' | 'studio' | 'synthlab' | 'mixer' | 'settings'>('studio');
     const [isBrowserOpen, setIsBrowserOpen] = useState(true);
 
     // DnD Sensors (Constraint distance to prevent accidental drags on clicks)
@@ -28,44 +23,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             },
         })
     );
-
-    // Store Integration for Timeline & Logic
-    const { project } = useProjectStore();
-
-    // Generic Lanes (Audio Tracks)
-    const timelineTracks = Array.from({ length: 8 }, (_, i) => ({
-        id: `lane-${i + 1}`,
-        name: `Track ${i + 1}`
-    }));
-
-    // Unified Timeline Clips
-    const timelineClips = project.timeline.clips;
-
-    const { updateTimelineClip, addTimelineClip, createPattern } = useProjectStore();
-
-    const handleClipMove = (clipId: string, newPosition: { start?: number; trackId?: string }) => {
-        // Unified update
-        if (newPosition.start !== undefined || newPosition.trackId !== undefined) {
-            updateTimelineClip(clipId, newPosition);
-        }
-    };
-
-    // We need createPattern to make a valid clip.
-    const handleClipAddAction = (trackId: string, start: number) => {
-        // Default to Drums for now (JuicyBox usage)
-        const type: 'drums' | 'melody' = 'drums';
-        const patternId = createPattern(type, `Pattern ${Math.floor(start / 16) + 1}`); // Auto-name
-
-        const newClip = {
-            id: `clip-${Date.now()}`,
-            patternId: patternId,
-            trackId: trackId,
-            start: start,
-            duration: 32 // Default duration
-        };
-
-        addTimelineClip(newClip);
-    };
 
     const { updateTrackInstrument } = useProjectStore();
 
@@ -134,8 +91,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <GlobalLoader />
             <div className={styles.layoutContainer}>
                 <Sidebar
-                    currentView={currentView}
-                    onViewChange={setCurrentView}
                     toggleBrowser={() => setIsBrowserOpen(!isBrowserOpen)}
                     isBrowserOpen={isBrowserOpen}
                 />
@@ -146,37 +101,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     <TopBar />
 
                     <main className={styles.workspace}>
-                        {/* The "Skyline" vs "Earth" zones logic will live here */}
-                        {/* For now, just render children or specific views based on `currentView` */}
-
-                        {currentView === 'skyline' && (
-                            <div className={styles.skylineView} style={{ height: '100%' }}>
-                                <Timeline
-                                    tracks={timelineTracks}
-                                    clips={timelineClips}
-                                    onClipMove={handleClipMove}
-                                    onClipAdd={handleClipAddAction}
-                                />
-                            </div>
-                        )}
-
-                        {currentView === 'studio' && (
-                            <div className={styles.studioView}>
-                                {children} {/* Default slot for JuicyBox/SynthLab pages */}
-                            </div>
-                        )}
-
-                        {currentView === 'synthlab' && (
-                            <div className={styles.synthView} style={{ height: '100%' }}>
-                                <SynthLabPage />
-                            </div>
-                        )}
-
-                        {currentView === 'mixer' && (
-                            <div className={styles.mixerView} style={{ height: '100%' }}>
-                                <MixerBoard />
-                            </div>
-                        )}
+                        {/* Render the routed content directly */}
+                        {children}
                     </main>
                 </div>
             </div>

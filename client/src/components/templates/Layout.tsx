@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from '../organisms/Sidebar/Sidebar';
 import TopBar from '../organisms/TopBar';
 import BrowserPanel from '../organisms/Browser/BrowserPanel';
@@ -8,10 +8,7 @@ import { useProjectStore } from '../../store/projectStore';
 import GlobalLoader from '../atoms/GlobalLoader';
 
 const Layout: React.FC = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const [isBrowserOpen, setIsBrowserOpen] = useState(false); // Default closed to match user expectation, or true? User asked for it, so maybe false initially? Let's stick to false or user preference. User complained it wasn't there. Let's make it visible.
-    // Actually, user said "NON" to seeing it. So making it visible by default ensures they see the fix.
+    const [isBrowserOpen, setIsBrowserOpen] = useState(false); // Default closed to match user expectation
 
     const { project, updateTrackInstrument, addTrack } = useProjectStore();
 
@@ -69,37 +66,6 @@ const Layout: React.FC = () => {
         }
     };
 
-    // 1. Map URL to View Mode for Sidebar Highlighting
-    const currentView = useMemo<'skyline' | 'studio' | 'synthlab' | 'mixer' | 'settings'>(() => {
-        const path = location.pathname;
-        if (path.includes('/song')) return 'skyline'; // Song Mode (Timeline)
-        if (path.includes('/juicy')) return 'studio'; // JuicyBox (Drums)
-        if (path.includes('/synth')) return 'synthlab'; // SynthLab
-        if (path.includes('/mixer')) return 'mixer';
-        return 'studio'; // Default
-    }, [location.pathname]);
-
-    // 2. Map Sidebar Selection to URL Navigation
-    const handleViewChange = (view: 'skyline' | 'studio' | 'synthlab' | 'mixer' | 'settings') => {
-        switch (view) {
-            case 'skyline':
-                navigate('/app/song');
-                break;
-            case 'studio':
-                navigate('/app/juicy');
-                break;
-            case 'synthlab':
-                navigate('/app/synth');
-                break;
-            case 'mixer':
-                navigate('/app/mixer');
-                break;
-            default:
-                // Settings or others not yet routed
-                console.log('Navigate to:', view);
-        }
-    };
-
     return (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <GlobalLoader />
@@ -113,8 +79,6 @@ const Layout: React.FC = () => {
 
                     {/* 2.1 Navigation Sidebar */}
                     <Sidebar
-                        currentView={currentView}
-                        onViewChange={handleViewChange}
                         toggleBrowser={() => setIsBrowserOpen(!isBrowserOpen)}
                         isBrowserOpen={isBrowserOpen}
                     />
