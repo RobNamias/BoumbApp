@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useProjectStore } from '../../store/projectStore';
-// import { useAuthStore } from '../../store/authStore'; // Fully removed
 import { useLoadingStore } from '../../store/loadingStore';
 import { projectService, type ProjectSummary } from '../../services/projectService';
 import TransportControls from '../molecules/TransportControls';
@@ -9,7 +8,6 @@ import Knob from '../atoms/Knob';
 import Led from '../atoms/Led';
 import Modal from '../molecules/Modal';
 import ConfirmModal from '../molecules/ConfirmModal';
-// LoginModal removed
 import DropdownMenu from '../molecules/DropdownMenu';
 import { Save, FolderOpen, Globe, FilePlus, Download, HelpCircle, Book, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +15,7 @@ import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import styles from '../../styles/modules/TopBar.module.scss';
 import GlobalKeySelector from '../molecules/GlobalKeySelector';
 
-// Internal Components styles
+
 // Internal Components styles
 // Removed btnStyle and badgeStyle as they are now in SCSS
 
@@ -42,8 +40,6 @@ const TopBar: React.FC = () => {
     } = useAppStore();
 
     const { project, setProject } = useProjectStore();
-    // const { user } = useAuthStore(); // Removed unused
-    // const { t } = useTranslation(); // Removed duplicate
 
 
     // Local State for Modals
@@ -247,7 +243,10 @@ const TopBar: React.FC = () => {
                         {
                             label: t('topbar.menu.docs'),
                             icon: <Book size={16} />,
-                            onClick: () => globalThis.open(`${import.meta.env.BASE_URL}manual/index.html`, '_blank')
+                            onClick: () => {
+                                const lang = i18n.language || 'en';
+                                globalThis.open(`${import.meta.env.BASE_URL}manual/${lang}/index.html`, '_blank');
+                            }
                         },
                         {
                             label: t('topbar.menu.about'),
