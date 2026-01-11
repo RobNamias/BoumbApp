@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { useProjectStore } from '../../store/projectStore';
-import { useAuthStore } from '../../store/authStore';
+// import { useAuthStore } from '../../store/authStore'; // Fully removed
 import { useLoadingStore } from '../../store/loadingStore';
 import { projectService, type ProjectSummary } from '../../services/projectService';
 import TransportControls from '../molecules/TransportControls';
@@ -42,7 +42,9 @@ const TopBar: React.FC = () => {
     } = useAppStore();
 
     const { project, setProject } = useProjectStore();
-    const { user } = useAuthStore();
+    // const { user } = useAuthStore(); // Removed unused
+    // const { t } = useTranslation(); // Removed duplicate
+
 
     // Local State for Modals
     const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
@@ -77,11 +79,7 @@ const TopBar: React.FC = () => {
     };
 
     const handleSaveClick = async () => {
-        if (!user) {
-            showNotification(t('topbar.notifications.save_auth'));
-            return;
-        }
-
+        // Local Mode: Always allowed
         if (!project.backendId) {
             // New Project -> Open Naming Modal
             setProjectNameInput(project.meta.title || 'My Song');
@@ -141,11 +139,6 @@ const TopBar: React.FC = () => {
     };
 
     const handleLoadClick = async () => {
-        if (!user) {
-            showNotification(t('topbar.notifications.load_auth'));
-            return;
-        }
-
         useLoadingStore.getState().setLoading(true, 'Récupération des projets...');
         try {
             const list = await projectService.getAllProjects();
@@ -302,15 +295,9 @@ const TopBar: React.FC = () => {
                         <span style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>{i18n.language.toUpperCase()}</span>
                     </button>
 
-                    {user ? (
-                        <div className={styles.userInfo}>
-                            <span className={styles.username}>{user.username}</span>
-                        </div>
-                    ) : (
-                        <div className={styles.userInfo}>
-                            <span className={styles.username}>Guest</span>
-                        </div>
-                    )}
+                    <div className={styles.userInfo}>
+                        <span className={styles.username}>Local Studio</span>
+                    </div>
                 </div>
             </div>
 

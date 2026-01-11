@@ -1,6 +1,7 @@
 {
   "name": "client",
   "private": true,
+  "homepage": "https://robnamias.github.io/BoumbApp",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -17,7 +18,6 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@types/uuid": "^10.0.0",
-    "axios": "^1.13.2",
     "clsx": "^2.1.1",
     "i18next": "^25.7.3",
     "i18next-browser-languagedetector": "^8.2.0",

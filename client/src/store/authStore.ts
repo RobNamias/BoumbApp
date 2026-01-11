@@ -18,13 +18,12 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
     persist(
-        (set) => ({
-            // DEMO MODE: Start with a demo user or allow easy login
-            token: 'demo-token',
-            user: { id: 1, email: 'producer@boumb.app', username: 'Demo Producer', roles: ['ROLE_USER'] },
+        (_set) => ({
+            token: 'local-token',
+            user: { id: 1, email: 'local@studio', username: 'Local Producer', roles: [] },
             isAuthenticated: true,
-            login: (token, user) => set({ token, user, isAuthenticated: true }),
-            logout: () => set({ token: null, user: null, isAuthenticated: false }),
+            login: () => { }, // No-op for local mode
+            logout: () => { }, // No-op for local mode
         }),
         {
             name: 'boumbapp-auth',

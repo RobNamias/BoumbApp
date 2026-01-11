@@ -77,13 +77,12 @@ export const projectService = {
             projects[idx] = { ...projects[idx], data, updatedAt: Date.now() };
             write(projects);
         } else {
-            // Should not happen if flow is correct, but safe fallback
             projects.unshift({ id: projectId, name: 'Untitled', data, updatedAt: Date.now() });
             write(projects);
         }
 
-        console.log('[LITE] Fake saveVersion', { projectId, data });
-        return 2; // fake next version number
+        console.log('Project saved locally', { projectId });
+        return 2; // Stub version number
     }
 };
 

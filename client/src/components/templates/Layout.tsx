@@ -83,16 +83,16 @@ const Layout: React.FC = () => {
     const handleViewChange = (view: 'skyline' | 'studio' | 'synthlab' | 'mixer' | 'settings') => {
         switch (view) {
             case 'skyline':
-                navigate('/app/song');
+                navigate('/song');
                 break;
             case 'studio':
-                navigate('/app/juicy');
+                navigate('/juicy');
                 break;
             case 'synthlab':
-                navigate('/app/synth');
+                navigate('/synth');
                 break;
             case 'mixer':
-                navigate('/app/mixer');
+                navigate('/mixer');
                 break;
             default:
                 // Settings or others not yet routed
