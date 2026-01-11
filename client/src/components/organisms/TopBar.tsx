@@ -247,7 +247,7 @@ const TopBar: React.FC = () => {
                         {
                             label: t('topbar.menu.docs'),
                             icon: <Book size={16} />,
-                            onClick: () => globalThis.open('/manual/index.html', '_blank')
+                            onClick: () => globalThis.open(`${import.meta.env.BASE_URL}manual/index.html`, '_blank')
                         },
                         {
                             label: t('topbar.menu.about'),
