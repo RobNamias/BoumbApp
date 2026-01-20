@@ -51,6 +51,7 @@
             "new": "Nouveau Projet",
             "open": "Ouvrir...",
             "save": "Sauvegarder",
+            "save_to_disk": "Enregistrer sur le disque",
             "export_wav": "Exporter WAV",
             "help": "Aide",
             "docs": "Documentation",

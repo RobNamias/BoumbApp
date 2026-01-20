@@ -83,6 +83,55 @@ export const projectService = {
 
         console.log('Project saved locally', { projectId });
         return 2; // Stub version number
+    },
+
+    exportProjectToJSON: async (project: any) => {
+        const fileName = `${project.meta.title || 'project'}.json`;
+        const jsonStr = JSON.stringify(project, null, 2);
+
+        try {
+            // @ts-ignore
+            if (globalThis.showSaveFilePicker) {
+                // @ts-ignore
+                const handle = await globalThis.showSaveFilePicker({
+                    suggestedName: fileName,
+                    types: [{
+                        description: 'BoumbApp Project',
+                        accept: { 'application/json': ['.json'] },
+                    }],
+                });
+                const writable = await handle.createWritable();
+                await writable.write(jsonStr);
+                await writable.close();
+                return;
+            }
+        } catch (err: any) {
+            if (err.name === 'AbortError') return; // User cancelled
+            console.warn('File System Access API failed, falling back to download', err);
+        }
+
+        // Fallback
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr);
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", fileName);
+        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    },
+
+    validateProjectData: (data: any): boolean => {
+        // Basic schema validation
+        if (!data || typeof data !== 'object') return false;
+        // Check for critical top-level properties
+        if (!data.meta || typeof data.meta !== 'object') return false;
+        if (!data.tracks || typeof data.tracks !== 'object') return false;
+        if (!data.drumPatterns || typeof data.drumPatterns !== 'object') return false;
+
+        // Optional: Check version compatibility
+        // if (data.version && data.version > CURRENT_VERSION) return false;
+
+        return true;
     }
 };
 

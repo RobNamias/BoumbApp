@@ -75,78 +75,41 @@ const TopBar: React.FC = () => {
     };
 
     const handleSaveClick = async () => {
-        // Local Mode: Always allowed
-        if (!project.backendId) {
-            // New Project -> Open Naming Modal
-            setProjectNameInput(project.meta.title || 'My Song');
-            setIsSaveModalOpen(true);
-        } else {
-            // Existing -> Save Version immediately
-            useLoadingStore.getState().setLoading(true, 'Sauvegarde de la version...');
-            try {
-                const ver = await projectService.saveVersion(project.backendId, project);
-                showNotification(t('topbar.notifications.saved', { version: ver }));
-            } catch (e) {
-                console.error(e);
-                showNotification(t('auth.errors.generic'));
-            } finally {
-                useLoadingStore.getState().setLoading(false);
-            }
-        }
+        // Open Modal to name the project before export
+        setProjectNameInput(project.meta.title || 'My Song');
+        setIsSaveModalOpen(true);
     };
 
-    // Enable Keyboard Shortcuts
+    // ... Keyboard shortcuts
     useKeyboardShortcuts({
         onSave: handleSaveClick
     });
 
-    const confirmCreateProject = async () => {
-        useLoadingStore.getState().setLoading(true, 'Création du projet...');
+    const confirmExportProject = async () => {
+        useLoadingStore.getState().setLoading(true, 'Exporting...');
         try {
-            // Update Store Name
-            useProjectStore.setState(state => ({
-                project: {
-                    ...state.project,
-                    meta: { ...state.project.meta, title: projectNameInput }
-                }
-            }));
+            // Update Store Name first
+            const updatedProject = {
+                ...project,
+                meta: { ...project.meta, title: projectNameInput }
+            };
 
-            const payload = { ...project, meta: { ...project.meta, title: projectNameInput } };
+            setProject(updatedProject); // Update local store
 
-            const newProj = await projectService.createProject(projectNameInput, payload);
+            // Trigger enhanced export (Modal/File Picker)
+            await projectService.exportProjectToJSON(updatedProject);
 
-            // Update Store with Backend ID
-            useProjectStore.setState(state => ({
-                project: {
-                    ...state.project,
-                    meta: { ...state.project.meta, title: projectNameInput },
-                    backendId: newProj.id
-                }
-            }));
-
+            showNotification(t('topbar.notifications.saved', { version: 'JSON' }));
             setIsSaveModalOpen(false);
-            showNotification(t('topbar.notifications.created', { name: newProj.name }));
         } catch (e) {
             console.error(e);
-            showNotification(t('auth.errors.generic'));
+            showNotification("Export failed");
         } finally {
             useLoadingStore.getState().setLoading(false);
         }
     };
 
-    const handleLoadClick = async () => {
-        useLoadingStore.getState().setLoading(true, 'Récupération des projets...');
-        try {
-            const list = await projectService.getAllProjects();
-            setProjectList(list);
-            setIsLoadModalOpen(true);
-        } catch (e) {
-            console.error(e);
-            showNotification(t('auth.errors.generic'));
-        } finally {
-            useLoadingStore.getState().setLoading(false);
-        }
-    };
+
 
     const loadProjectVersion = (version: any) => {
         useLoadingStore.getState().setLoading(true, 'Chargement du projet...');
@@ -174,8 +137,65 @@ const TopBar: React.FC = () => {
         }
     };
 
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+    const handleFileLoad = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const json = JSON.parse(e.target?.result as string);
+
+                // Validate Schema
+                if (!projectService.validateProjectData(json)) {
+                    showNotification("Invalid Project File");
+                    return;
+                }
+
+                // Security/Sanity Check: Ensure project ID is present or regenerate
+                const secureProject = {
+                    ...json,
+                    backendId: json.backendId || Date.now().toString() // Use file ID or generate temp
+                };
+
+                // Load into Store
+                useLoadingStore.getState().setLoading(true, 'Chargement du fichier...');
+
+                // Simulate delay for effect
+                await new Promise(r => setTimeout(r, 500));
+
+                setProject(secureProject);
+                if (secureProject.meta && secureProject.meta.bpm) {
+                    setBpm(secureProject.meta.bpm);
+                }
+
+                showNotification(t('topbar.notifications.loaded', { name: secureProject.meta?.title || 'Project', version: 'File' }));
+
+            } catch (err) {
+                console.error("File load error", err);
+                showNotification("Error loading file");
+            } finally {
+                useLoadingStore.getState().setLoading(false);
+                // Reset input
+                if (fileInputRef.current) fileInputRef.current.value = '';
+            }
+        };
+        reader.readAsText(file);
+    };
+
     return (
         <div className={styles.topBar}>
+            {/* Hidden File Input for Load */}
+            <input
+                type="file"
+                accept=".json"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileLoad}
+            />
+
             {/* Left: Transport */}
             <div className={styles.leftSection}>
                 <TransportControls
@@ -218,7 +238,7 @@ const TopBar: React.FC = () => {
                         {
                             label: t('topbar.menu.open'),
                             icon: <FolderOpen size={16} />,
-                            onClick: handleLoadClick
+                            onClick: () => fileInputRef.current?.click()
                         },
                         {
                             label: t('topbar.menu.save'),
@@ -315,7 +335,7 @@ const TopBar: React.FC = () => {
             />
 
             {/* Save Modal */}
-            <Modal isOpen={isSaveModalOpen} onClose={() => setIsSaveModalOpen(false)} title={t('topbar.modals.save_title')}>
+            <Modal isOpen={isSaveModalOpen} onClose={() => setIsSaveModalOpen(false)} title={t('topbar.menu.save')}>
                 <div className={styles.modalForm}>
                     <label>{t('topbar.modals.project_name')}</label>
                     <input
@@ -324,10 +344,10 @@ const TopBar: React.FC = () => {
                         autoFocus
                     />
                     <button
-                        onClick={confirmCreateProject}
+                        onClick={confirmExportProject}
                         className={styles.createBtn}
                     >
-                        {t('topbar.modals.create_btn')}
+                        {t('topbar.menu.save_to_disk') || 'Save to Disk'}
                     </button>
                 </div>
             </Modal>

@@ -112,7 +112,6 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({
 
             {/* RIGHT COL: Name & Controls */}
             <div className="track-header__right">
-                {/* Row 1: Name */}
                 {/* Row 1: Name (Sample Name) */}
                 <div className="track-header__right-top">
                     <span
@@ -130,8 +129,6 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({
                     >
                         {(() => {
                             if (!track.sample) return track.name;
-
-                            // Extract Kit Name if present: samples/kits/808/Kick.ogg -> 808
                             const kitMatch = track.sample.match(/kits\/([^/]+)\//);
                             const fileName = track.sample.split('/').pop()?.replace(/\.[^/.]+$/, "") || track.sample;
 
@@ -163,7 +160,7 @@ const TrackHeader: React.FC<TrackHeaderProps> = ({
                         <DragInput
                             value={outputValue}
                             min={1}
-                            max={4}
+                            max={10}
                             onChange={handleOutputChange}
                             label="Output Channel"
                             hideLabel
