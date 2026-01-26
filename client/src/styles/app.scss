@@ -1,3 +1,11 @@
+/* Custom Fonts (Migrated from index.css) */
+@font-face {
+    font-family: 'Denmark';
+    src: url('/fonts/DENMARK.TTF') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --bg-dark: #121212;
     --text-light: #e0e0e0;
