@@ -1,6 +1,7 @@
 {
     "hero": {
         "subtitle": "Your Cloud Music Studio",
+        "new_feature": "NEW: Export WAV & Live Rec",
         "enter": "ENTER STUDIO",
         "features": {
             "sequencer": "Sequencer",

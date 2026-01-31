@@ -191,6 +191,7 @@
     font-weight: 800;
     letter-spacing: -2px;
     background: linear-gradient(180deg, #fff 0%, #a0a0a0 100%);
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 20px rgba(187, 134, 252, 0.3));
@@ -203,6 +204,22 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+
+.newFeatureBadge {
+    background: rgba(187, 134, 252, 0.2);
+    color: #bb86fc;
+    border: 1px solid #bb86fc;
+    border-radius: 20px;
+    padding: 5px 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
 }
 
 .disclaimer {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe } from 'lucide-react';
+import { Globe, Sparkles } from 'lucide-react';
 import styles from '../../styles/modules/Hero.module.scss';
 
 interface HeroProps {
@@ -57,6 +57,11 @@ const Hero: React.FC<HeroProps> = ({ onStart }) => {
             </div>
 
             <div className={styles.contentContainer}>
+                <div className={styles.newFeatureBadge}>
+                    <Sparkles size={14} />
+                    {t('hero.new_feature')}
+                </div>
+
                 <h1 className={styles.titleGlow}>BOUMBAPP</h1>
 
                 {/* Lite / Demo Disclaimer */}

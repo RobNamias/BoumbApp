@@ -42,6 +42,7 @@
             font-size: 0.9em;
             text-align: center;
             font-weight: bold;
+            appearance: textfield;
             -moz-appearance: textfield; // Hide spinners in Firefox
 
             &:focus {
