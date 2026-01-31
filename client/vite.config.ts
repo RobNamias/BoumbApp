@@ -11,6 +11,9 @@ export default defineConfig(({ command }) => ({
     port: 5173,
     open: true, // Auto-open browser
   },
+  build: {
+    chunkSizeWarningLimit: 1000,
+  },
   test: {
     globals: true,
     environment: 'jsdom',
