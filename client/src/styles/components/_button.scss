@@ -1,4 +1,4 @@
-// Button Component
+// Button Component - Premium UI
 // BEM: .btn, .btn--primary, .btn--secondary, .btn--ghost
 
 .btn {
@@ -6,57 +6,94 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
     border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 500;
+    border-radius: 8px; // Softer corners
+    font-size: 0.95rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+
+    &:active {
+        transform: scale(0.96);
+    }
 
     &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        filter: grayscale(1);
     }
 
     // Sizes
     &--sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
     }
 
     &--lg {
-        padding: 0.75rem 1.5rem;
+        padding: 0.8rem 1.6rem;
         font-size: 1.125rem;
     }
 
     // Variants
+
+    // PRIMARY: Vivid Gradient
     &--primary {
-        background-color: var(--primary, #bb86fc);
-        color: var(--bg-dark, #121212);
+        background: linear-gradient(135deg, #646cff 0%, #4a50b8 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(100, 108, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
 
         &:hover:not(:disabled) {
             filter: brightness(1.1);
+            box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(1px) scale(0.96);
         }
     }
 
+    // SECONDARY: Glassmorphism
     &--secondary {
-        background-color: transparent;
-        border: 1px solid var(--primary, #bb86fc);
-        color: var(--primary, #bb86fc);
+        background: rgba(255, 255, 255, 0.05); // Subtle glass
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ddd;
+        backdrop-filter: blur(4px);
 
         &:hover:not(:disabled) {
-            background-color: rgba(187, 134, 252, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            transform: translateY(-1px);
         }
     }
 
+    // DANGER: Red Gradient
+    &--danger {
+        background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+
+        &:hover:not(:disabled) {
+            filter: brightness(1.1);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+    }
+
+    // GHOST: Minimal
     &--ghost {
         background-color: transparent;
-        color: var(--text-light, #e0e0e0);
+        color: var(--text-light, #aaa);
 
         &:hover:not(:disabled) {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #fff;
         }
     }
 }

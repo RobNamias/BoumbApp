@@ -3,9 +3,11 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from '../organisms/Sidebar/Sidebar';
 import TopBar from '../organisms/TopBar';
 import BrowserPanel from '../organisms/Browser/BrowserPanel';
+import PromptModal from '../molecules/PromptModal';
 import { DndContext, useSensor, useSensors, PointerSensor, type DragEndEvent } from '@dnd-kit/core';
 import { useProjectStore } from '../../store/projectStore';
 import GlobalLoader from '../atoms/GlobalLoader';
+import { useAudioRecorder } from '../../hooks/useAudioRecorder';
 
 const Layout: React.FC = () => {
     const location = useLocation();
@@ -100,13 +102,34 @@ const Layout: React.FC = () => {
         }
     };
 
+    // Recording Logic
+    const [isRecordingPromptOpen, setIsRecordingPromptOpen] = useState(false);
+    const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
+
+    const handleRecordingComplete = (blob: Blob) => {
+        setRecordingBlob(blob);
+        setIsRecordingPromptOpen(true);
+    };
+
+    const confirmRecordingSave = (name: string) => {
+        if (recordingBlob) {
+            import('../../services/ExportManager').then(({ ExportManager }) => {
+                ExportManager.saveLiveRecording(recordingBlob, name || 'Live Recording');
+            });
+        }
+        setRecordingBlob(null);
+        setIsRecordingPromptOpen(false);
+    };
+
+    const { isRecording, toggleRecording } = useAudioRecorder(handleRecordingComplete);
+
     return (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <GlobalLoader />
             <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden', backgroundColor: '#1e1e1e', color: '#fff' }}>
 
                 {/* 1. Top Bar (Full Width) */}
-                <TopBar />
+                <TopBar isRecording={isRecording} onRecord={toggleRecording} />
 
                 {/* 2. Main Workspace (Sidebar + Browser + Content) */}
                 <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
@@ -127,6 +150,19 @@ const Layout: React.FC = () => {
                         <Outlet />
                     </div>
                 </div>
+
+                {/* Modals */}
+                {isRecordingPromptOpen && (
+                    <PromptModal // Lazy load if needed or direct
+                        isOpen={isRecordingPromptOpen}
+                        onClose={() => setIsRecordingPromptOpen(false)}
+                        onConfirm={confirmRecordingSave}
+                        title="Save Recording"
+                        message="Enter a name for your live recording:"
+                        defaultValue="Live Recording"
+                        confirmLabel="Download"
+                    />
+                )}
             </div>
         </DndContext>
     );

@@ -102,9 +102,16 @@ export const useProjectAudio = (onStep?: (step: number) => void) => {
             });
 
             // Loop settings for Pattern Mode
+            // Determine max duration (Drums = 32, Melody = 64)
+            const drumDuration = drumPid ? 32 : 0;
+            const melDuration = melPid ? 64 : 0;
+            const maxDuration = Math.max(drumDuration, melDuration, 32); // Min 32
+
+            const bars = Math.ceil(maxDuration / 16);
+
             Tone.getTransport().loop = true;
             Tone.getTransport().loopStart = 0;
-            Tone.getTransport().loopEnd = "2:0:0"; // Default, preferably max pattern duration
+            Tone.getTransport().loopEnd = `${bars}:0:0`;
         } else {
             // SONG MODE
             const songEvents: Record<string, any[]> = {};

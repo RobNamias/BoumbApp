@@ -1,6 +1,7 @@
 // Cleaned up file content
 import { create } from 'zustand';
 import audioInstance from '../audio/AudioEngine';
+import { useProjectStore } from './projectStore'; // Import ProjectStore
 
 interface User {
     id: number;
@@ -66,6 +67,8 @@ export const useAppStore = create<AppState>((set) => ({
     setBpm: (bpm) => {
         set({ bpm });
         audioInstance.setBpm(bpm);
+        // Sync to Project Store (Critical for Export)
+        useProjectStore.getState().setBpm(bpm);
     },
     // Initialize Audio Engine Hook
     _initAudio: () => {
@@ -103,11 +106,13 @@ export const useAppStore = create<AppState>((set) => ({
     setPlayingStep: (step) => set({ playingStep: step }),
     setMasterVolume: (volume) => {
         set({ masterVolume: volume });
-        audioInstance.setChannelVolume('master', volume);
+        // Sync to Project Store (which also handles Audio Engine)
+        useProjectStore.getState().updateMixerChannel('master', { volume });
     },
     setMasterMute: (muted) => {
         set({ isMasterMuted: muted });
-        audioInstance.setChannelMute('master', muted);
+        // Sync to Project Store
+        useProjectStore.getState().updateMixerChannel('master', { muted });
     },
 
     // New Bus Controls
@@ -115,10 +120,12 @@ export const useAppStore = create<AppState>((set) => ({
     synthVolume: 0.8,
     setJuicyVolume: (volume) => {
         set({ juicyVolume: volume });
-        audioInstance.setChannelVolume('group-1', volume); // Map Juicy to Group 1
+        // Sync to Project Store (Group 1)
+        useProjectStore.getState().updateMixerChannel('group-1', { volume });
     },
     setSynthVolume: (volume) => {
         set({ synthVolume: volume });
-        audioInstance.setChannelVolume('group-2', volume); // Map Synth to Group 2
+        // Sync to Project Store (Group 2)
+        useProjectStore.getState().updateMixerChannel('group-2', { volume });
     },
 }));

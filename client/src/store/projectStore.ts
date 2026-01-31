@@ -124,6 +124,7 @@ export interface ProjectState {
     };
 
     // Actions
+    setBpm: (bpm: number) => void;
     setGlobalKey: (root: string, scale: string) => void;
     createPattern: (type: 'drums' | 'melody', name: string) => string;
     setActivePattern: (type: 'drums' | 'melody', id: string | null) => void;
@@ -264,6 +265,17 @@ const DEFAULT_PROJECT: ProjectData = {
 export const useProjectStore = create<ProjectState>((set, get) => ({
     project: structuredClone(DEFAULT_PROJECT), // Deep copy
     activePatterns: { drums: 'pattern-d1', melody: 'pattern-m1' },
+
+    setBpm: (bpm) => {
+        set((state) => ({
+            project: {
+                ...state.project,
+                meta: { ...state.project.meta, bpm }
+            }
+        }));
+        // Audio Sync handled by useAppStore usually, but good to have here too if we load project?
+        // Actually useAppStore calls audioInstance directly.
+    },
 
     setGlobalKey: (root, scale) => {
         set((state) => ({

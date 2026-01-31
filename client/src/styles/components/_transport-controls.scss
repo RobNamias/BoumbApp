@@ -66,4 +66,53 @@
         padding-left: 12px;
         border-left: 1px solid rgba(255, 255, 255, 0.1);
     }
+
+    // --- Override default Button Styles to match "Neon" aesthetic ---
+    .btn {
+        background: transparent;
+        border: 1px solid #bb86fc; // Neon Purple
+        color: #bb86fc;
+        box-shadow: none;
+        transition: all 0.2s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 3px;
+
+        svg {
+            stroke-width: 2.5px; // Make icons slightly bolder
+        }
+
+        &:hover:not(:disabled) {
+            background: rgba(187, 134, 252, 0.15);
+            box-shadow: 0 0 12px rgba(187, 134, 252, 0.4);
+            color: white;
+            border-color: #d0b0ff;
+            transform: translateY(-1px);
+        }
+
+        // Active State (Primary variant implies functionality is active/toggled)
+        &--primary {
+            background: rgba(187, 134, 252, 0.25) !important; // Enforce over gradient
+            color: white !important;
+            box-shadow: 0 0 15px rgba(187, 134, 252, 0.5) !important;
+            border-color: #d0b0ff !important;
+        }
+
+        // Recording State override
+        &--recording {
+            border-color: #ff4444 !important;
+            color: #ff4444 !important;
+
+            &.btn--primary {
+                background: rgba(255, 68, 68, 0.2) !important;
+                box-shadow: 0 0 15px rgba(255, 68, 68, 0.5) !important;
+            }
+
+            &:hover:not(:disabled) {
+                background: rgba(255, 68, 68, 0.15);
+                box-shadow: 0 0 12px rgba(255, 68, 68, 0.4);
+                color: white;
+                border-color: #ff8888;
+            }
+        }
+    }
 }

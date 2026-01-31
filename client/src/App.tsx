@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/templates/Layout';
 import JuicyBoxPage from './pages/JuicyBoxPage';
 import SynthLabPage from './pages/SynthLabPage';
@@ -27,7 +27,7 @@ function App() {
   };
 
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
+    <HashRouter>
       <Routes>
         {/* Root Route: Shows Hero if not ready, OR directly to app if audio ready (or we can keep the landing page) */}
         {/* Simplified for GH Pages Demo: If not ready, show Hero. If ready, rendering Layout which contains the app */}
@@ -60,7 +60,7 @@ function App() {
         {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 

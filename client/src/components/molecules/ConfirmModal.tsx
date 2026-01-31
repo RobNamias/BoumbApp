@@ -1,5 +1,6 @@
 import React from 'react';
 import Modal from './Modal';
+import styles from '../../styles/modules/Modal.module.scss';
 
 interface ConfirmModalProps {
     isOpen: boolean;
@@ -29,44 +30,16 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     {message}
                 </p>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
+                <div className={styles.modalFooter}>
                     <button
                         onClick={onClose}
-                        style={{
-                            padding: '8px 16px',
-                            background: 'transparent',
-                            border: '1px solid #444',
-                            borderRadius: '4px',
-                            color: '#aaa',
-                            cursor: 'pointer',
-                            fontSize: '0.9rem',
-                            transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.borderColor = '#666'; e.currentTarget.style.color = '#fff'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.color = '#aaa'; }}
-                        onFocus={(e) => { e.currentTarget.style.borderColor = '#666'; e.currentTarget.style.color = '#fff'; }}
-                        onBlur={(e) => { e.currentTarget.style.borderColor = '#444'; e.currentTarget.style.color = '#aaa'; }}
+                        className={styles.btnCancel}
                     >
                         {cancelLabel}
                     </button>
                     <button
                         onClick={onConfirm}
-                        style={{
-                            padding: '8px 16px',
-                            background: isDestructive ? '#d32f2f' : '#4CAF50',
-                            border: 'none',
-                            borderRadius: '4px',
-                            color: 'white',
-                            cursor: 'pointer',
-                            fontSize: '0.9rem',
-                            fontWeight: 'bold',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                            transition: 'all 0.2s'
-                        }}
-                        onMouseOver={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
-                        onMouseOut={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
-                        onFocus={(e) => { e.currentTarget.style.filter = 'brightness(1.1)'; }}
-                        onBlur={(e) => { e.currentTarget.style.filter = 'brightness(1)'; }}
+                        className={`${styles.btnConfirm} ${isDestructive ? styles.destructive : ''}`}
                     >
                         {confirmLabel}
                     </button>

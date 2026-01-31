@@ -8,12 +8,15 @@ import Knob from '../atoms/Knob';
 import Led from '../atoms/Led';
 import Modal from '../molecules/Modal';
 import ConfirmModal from '../molecules/ConfirmModal';
+import PromptModal from '../molecules/PromptModal';
 import DropdownMenu from '../molecules/DropdownMenu';
 import { Save, FolderOpen, Globe, FilePlus, Download, HelpCircle, Book, Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import styles from '../../styles/modules/TopBar.module.scss';
+import modalStyles from '../../styles/modules/Modal.module.scss';
 import GlobalKeySelector from '../molecules/GlobalKeySelector';
+import { ExportManager } from '../../services/ExportManager';
 
 
 // Internal Components styles
@@ -26,7 +29,12 @@ const MiniKnob = ({ value, onChange, color, label, size = 28 }: any) => (
     </div>
 );
 
-const TopBar: React.FC = () => {
+interface TopBarProps {
+    isRecording?: boolean;
+    onRecord?: () => void;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ isRecording, onRecord }) => {
     const { t, i18n } = useTranslation();
 
     // Stores
@@ -43,11 +51,15 @@ const TopBar: React.FC = () => {
 
 
     // Local State for Modals
-    const [isSaveModalOpen, setIsSaveModalOpen] = useState(false);
     const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
     const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
     const [isConfirmNewProjectOpen, setIsConfirmNewProjectOpen] = useState(false);
-    const [projectNameInput, setProjectNameInput] = useState('');
+
+    // Prompt Modals (Save & Export)
+    const [isSavePromptOpen, setIsSavePromptOpen] = useState(false);
+    const [isExportPromptOpen, setIsExportPromptOpen] = useState(false);
+    const [defaultPromptValue, setDefaultPromptValue] = useState('');
+
     const [projectList, setProjectList] = useState<ProjectSummary[]>([]);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [versionList, setVersionList] = useState<any[]>([]); // Should import ProjectVersion type
@@ -74,10 +86,15 @@ const TopBar: React.FC = () => {
         i18n.changeLanguage(nextLang);
     };
 
-    const handleSaveClick = async () => {
-        // Open Modal to name the project before export
-        setProjectNameInput(project.meta.title || 'My Song');
-        setIsSaveModalOpen(true);
+    const handleSaveClick = () => {
+        // Prepare default name
+        setDefaultPromptValue(project.meta.title || 'My Song');
+        setIsSavePromptOpen(true);
+    };
+
+    const handleExportClick = () => {
+        setDefaultPromptValue(project.meta.title || 'My Song');
+        setIsExportPromptOpen(true);
     };
 
     // ... Keyboard shortcuts
@@ -85,13 +102,15 @@ const TopBar: React.FC = () => {
         onSave: handleSaveClick
     });
 
-    const confirmExportProject = async () => {
-        useLoadingStore.getState().setLoading(true, 'Exporting...');
+    const confirmSaveProject = async (name: string) => {
+        if (!name) return;
+
+        useLoadingStore.getState().setLoading(true, 'Saving...');
         try {
             // Update Store Name first
             const updatedProject = {
                 ...project,
-                meta: { ...project.meta, title: projectNameInput }
+                meta: { ...project.meta, title: name }
             };
 
             setProject(updatedProject); // Update local store
@@ -100,12 +119,28 @@ const TopBar: React.FC = () => {
             await projectService.exportProjectToJSON(updatedProject);
 
             showNotification(t('topbar.notifications.saved', { version: 'JSON' }));
-            setIsSaveModalOpen(false);
+        } catch (e) {
+            console.error(e);
+            showNotification("Save failed");
+        } finally {
+            useLoadingStore.getState().setLoading(false);
+            setIsSavePromptOpen(false);
+        }
+    };
+
+    const confirmExportWav = async (name: string) => {
+        if (!name) return;
+
+        useLoadingStore.getState().setLoading(true, 'Exporting WAV...');
+        try {
+            await ExportManager.exportOfflineProject(project, name);
+            showNotification(t('topbar.notifications.saved', { version: 'WAV' }));
         } catch (e) {
             console.error(e);
             showNotification("Export failed");
         } finally {
             useLoadingStore.getState().setLoading(false);
+            setIsExportPromptOpen(false);
         }
     };
 
@@ -114,17 +149,17 @@ const TopBar: React.FC = () => {
     const loadProjectVersion = (version: any) => {
         useLoadingStore.getState().setLoading(true, 'Chargement du projet...');
         try {
-            if (version && version.data) {
+            if (version?.data) {
                 const restoredData = { ...version.data, backendId: selectedProjectId };
                 setProject(restoredData);
-                if (restoredData.meta && restoredData.meta.bpm) {
+                if (restoredData.meta?.bpm) {
                     setBpm(restoredData.meta.bpm);
                 }
 
                 setIsLoadModalOpen(false);
                 setSelectedProjectId(null);
                 setVersionList([]);
-                showNotification(t('topbar.notifications.loaded', { name: projectNameInput, version: version.versionNumber }));
+                showNotification(t('topbar.notifications.loaded', { name: restoredData.meta.title || 'Project', version: version.versionNumber }));
                 // Stop playback to avoid glitches                stop();
             } else {
                 showNotification('No content for this version');
@@ -139,50 +174,62 @@ const TopBar: React.FC = () => {
 
     const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-    const handleFileLoad = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileLoad = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const json = JSON.parse(e.target?.result as string);
+        try {
+            const text = await file.text();
+            const json = JSON.parse(text);
 
-                // Validate Schema
-                if (!projectService.validateProjectData(json)) {
-                    showNotification("Invalid Project File");
-                    return;
-                }
-
-                // Security/Sanity Check: Ensure project ID is present or regenerate
-                const secureProject = {
-                    ...json,
-                    backendId: json.backendId || Date.now().toString() // Use file ID or generate temp
-                };
-
-                // Load into Store
-                useLoadingStore.getState().setLoading(true, 'Chargement du fichier...');
-
-                // Simulate delay for effect
-                await new Promise(r => setTimeout(r, 500));
-
-                setProject(secureProject);
-                if (secureProject.meta && secureProject.meta.bpm) {
-                    setBpm(secureProject.meta.bpm);
-                }
-
-                showNotification(t('topbar.notifications.loaded', { name: secureProject.meta?.title || 'Project', version: 'File' }));
-
-            } catch (err) {
-                console.error("File load error", err);
-                showNotification("Error loading file");
-            } finally {
-                useLoadingStore.getState().setLoading(false);
-                // Reset input
-                if (fileInputRef.current) fileInputRef.current.value = '';
+            // Validate Schema
+            if (!projectService.validateProjectData(json)) {
+                showNotification("Invalid Project File");
+                return;
             }
-        };
-        reader.readAsText(file);
+
+            // Security/Sanity Check: Ensure project ID is present or regenerate
+            const secureProject = {
+                ...json,
+                backendId: json.backendId || Date.now().toString() // Use file ID or generate temp
+            };
+
+            // Load into Store
+            useLoadingStore.getState().setLoading(true, 'Chargement du fichier...');
+
+            // Simulate delay for effect
+            await new Promise(r => setTimeout(r, 500));
+
+            setProject(secureProject);
+            if (secureProject.meta?.bpm) {
+                setBpm(secureProject.meta.bpm);
+            }
+
+            showNotification(t('topbar.notifications.loaded', { name: secureProject.meta?.title || 'Project', version: 'File' }));
+
+        } catch (err) {
+            console.error("File load error", err);
+            showNotification("Error loading file");
+        } finally {
+            useLoadingStore.getState().setLoading(false);
+            // Reset input
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
+    const loadVersions = async (projId: string, name?: string) => {
+        useLoadingStore.getState().setLoading(true, 'Récupération des versions...');
+        try {
+            const versions = await projectService.getProjectVersions(projId);
+            setVersionList(versions);
+            setSelectedProjectId(projId);
+            setDefaultPromptValue(name || ''); // Set default prompt value for version view header
+        } catch (e) {
+            console.error(e);
+            showNotification('Error fetching versions');
+        } finally {
+            useLoadingStore.getState().setLoading(false);
+        }
     };
 
     return (
@@ -193,7 +240,7 @@ const TopBar: React.FC = () => {
                 accept=".json"
                 ref={fileInputRef}
                 style={{ display: 'none' }}
-                onChange={handleFileLoad}
+                onChange={(e) => void handleFileLoad(e)}
             />
 
             {/* Left: Transport */}
@@ -211,6 +258,8 @@ const TopBar: React.FC = () => {
                     }}
                     playMode={playMode} onToggleMode={togglePlayMode}
                     currentStep={playingStep}
+                    isRecording={isRecording}
+                    onRecord={onRecord}
                 />
 
                 <div style={{ marginLeft: '12px', borderRight: '1px solid #333', paddingRight: '12px', display: 'flex', alignItems: 'center' }}>
@@ -249,8 +298,8 @@ const TopBar: React.FC = () => {
                         {
                             label: t('topbar.menu.export_wav'),
                             icon: <Download size={16} />,
-                            onClick: () => showNotification(t('topbar.notifications.wip')),
-                            disabled: true
+                            onClick: handleExportClick,
+                            disabled: false
                         }
                     ]}
                 />
@@ -299,7 +348,7 @@ const TopBar: React.FC = () => {
                         {/* Enlarged Master Knob */}
                         <MiniKnob value={masterVolume} onChange={setMasterVolume} color="#4CAF50" label="MASTER" size={40} />
                         <button onClick={() => setMasterMute(!isMasterMuted)} className={styles.muteBtn}>
-                            <div className={`${styles.ledContainer} ${!isMasterMuted ? styles.active : ''}`}>
+                            <div className={`${styles.ledContainer} ${isMasterMuted ? '' : styles.active}`}>
                                 <Led active={!isMasterMuted} color="#4CAF50" size={8} />
                             </div>
                         </button>
@@ -322,8 +371,6 @@ const TopBar: React.FC = () => {
 
             {/* --- Modals --- */}
 
-
-
             <ConfirmModal
                 isOpen={isConfirmNewProjectOpen}
                 onClose={() => setIsConfirmNewProjectOpen(false)}
@@ -334,86 +381,74 @@ const TopBar: React.FC = () => {
                 isDestructive={true}
             />
 
-            {/* Save Modal */}
-            <Modal isOpen={isSaveModalOpen} onClose={() => setIsSaveModalOpen(false)} title={t('topbar.menu.save')}>
-                <div className={styles.modalForm}>
-                    <label>{t('topbar.modals.project_name')}</label>
-                    <input
-                        value={projectNameInput}
-                        onChange={(e) => setProjectNameInput(e.target.value)}
-                        autoFocus
-                    />
-                    <button
-                        onClick={confirmExportProject}
-                        className={styles.createBtn}
-                    >
-                        {t('topbar.menu.save_to_disk') || 'Save to Disk'}
-                    </button>
-                </div>
-            </Modal>
+            {/* Save Prompt */}
+            <PromptModal
+                isOpen={isSavePromptOpen}
+                onClose={() => setIsSavePromptOpen(false)}
+                onConfirm={confirmSaveProject}
+                title={t('topbar.menu.save')}
+                message={t('topbar.modals.project_name')}
+                defaultValue={defaultPromptValue}
+                confirmLabel={t('topbar.menu.save_to_disk') || 'Save'}
+            />
+
+            {/* Export Prompt */}
+            <PromptModal
+                isOpen={isExportPromptOpen}
+                onClose={() => setIsExportPromptOpen(false)}
+                onConfirm={confirmExportWav}
+                title={t('topbar.menu.export_wav')}
+                message="Choose a filename for your WAV export:"
+                defaultValue={defaultPromptValue}
+                confirmLabel={t('topbar.menu.export_wav') || 'Export'}
+            />
 
             {/* Load Modal */}
             <Modal isOpen={isLoadModalOpen} onClose={() => { setIsLoadModalOpen(false); setProjectList([]); setVersionList([]); setSelectedProjectId(null); }} title={t('topbar.modals.load_title')}>
-                {!selectedProjectId ? (
-                    // Step 1: Project List
-                    <div className={styles.projectList}>
-                        {projectList.length === 0 ? <p style={{ color: '#666', textAlign: 'center' }}>{t('topbar.modals.no_projects')}</p> : projectList.map(proj => (
-                            <div key={proj.id} className={styles.projectItem}
-                                onClick={async () => {
-                                    useLoadingStore.getState().setLoading(true, 'Récupération des versions...');
-                                    try {
-                                        const versions = await projectService.getProjectVersions(proj.id);
-                                        setVersionList(versions);
-                                        setSelectedProjectId(proj.id);
-                                        // Store name for display
-                                        setProjectNameInput(proj.name);
-                                    } catch (e) {
-                                        console.error(e);
-                                        showNotification('Error fetching versions');
-                                    } finally {
-                                        useLoadingStore.getState().setLoading(false);
-                                    }
-                                }}
-                                role="button"
-                                tabIndex={0}
-                            >
-                                <span style={{ fontWeight: 'bold' }}>{proj.name}</span>
-                                <span style={{ fontSize: '0.8rem', color: '#666' }}>
-                                    {new Date(proj.updatedAt || proj.createdAt).toLocaleDateString()}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
+                {selectedProjectId ? (
                     // Step 2: Version List (Drill Down)
-                    <div className={styles.versionView}>
-                        <div className={styles.versionHeader} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
+                    <div className={modalStyles.versionView}>
+                        <div className={modalStyles.versionHeader} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
                             <button onClick={() => setSelectedProjectId(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }}>
                                 &larr; Back
                             </button>
-                            <h3 style={{ margin: 0, fontSize: '1rem' }}>{projectNameInput}</h3>
+                            <h3 style={{ margin: 0, fontSize: '1rem' }}>{defaultPromptValue}</h3>
                         </div>
-                        <div className={styles.projectList}>
+                        <div className={modalStyles.projectList}>
                             {versionList.map(ver => (
-                                <div key={ver.id} className={styles.projectItem}
+                                <button key={ver.id} className={modalStyles.projectItem}
                                     onClick={() => loadProjectVersion(ver)}
-                                    role="button"
-                                    tabIndex={0}
+                                    type="button"
                                 >
                                     <span style={{ fontWeight: 'bold' }}>v{ver.versionNumber}</span>
                                     <span style={{ fontSize: '0.8rem', color: '#666' }}>
                                         {new Date(ver.createdAt).toLocaleString()}
                                     </span>
-                                </div>
+                                </button>
                             ))}
                         </div>
+                    </div>
+                ) : (
+                    // Step 1: Project List
+                    <div className={modalStyles.projectList}>
+                        {projectList.length === 0 ? <p style={{ color: '#666', textAlign: 'center' }}>{t('topbar.modals.no_projects')}</p> : projectList.map(proj => (
+                            <button key={proj.id} className={modalStyles.projectItem}
+                                onClick={() => void loadVersions(proj.id, proj.name)}
+                                type="button"
+                            >
+                                <span style={{ fontWeight: 'bold' }}>{proj.name}</span>
+                                <span style={{ fontSize: '0.8rem', color: '#666' }}>
+                                    {new Date(proj.updatedAt || proj.createdAt).toLocaleDateString()}
+                                </span>
+                            </button>
+                        ))}
                     </div>
                 )}
             </Modal>
 
             {/* About Modal */}
             <Modal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} title={t('topbar.menu.about')}>
-                <div className={styles.aboutContent}>
+                <div className={modalStyles.aboutContent}>
                     <h2>BOUMBAPP</h2>
                     <p style={{ color: '#aaa', marginBottom: '20px' }}>v0.1.0 (MVP)</p>
                     <p style={{ lineHeight: '1.6', marginBottom: '20px' }}>

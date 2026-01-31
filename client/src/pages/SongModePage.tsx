@@ -5,6 +5,8 @@ import { useAppStore } from '../store/useAppStore';
 import { useProjectAudio } from '../hooks/useProjectAudio';
 import TimelineDebugOverlay from '../components/organisms/Timeline/TimelineDebugOverlay';
 
+
+
 const SongModePage: React.FC = () => {
     const { project, updateTimelineClip, addTimelineClip, removeTimelineClip, createPattern, activePatterns } = useProjectStore();
     const { setPlayingStep, playingStep } = useAppStore();
@@ -19,11 +21,18 @@ const SongModePage: React.FC = () => {
         { id: 'group-synth', name: 'SynthLab', type: 'melody' }
     ];
 
-    // Generic Grid Tracks (Destinations)
-    const timelineTracks = Array.from({ length: 12 }, (_, i) => ({
-        id: `lane-${i + 1}`,
-        name: `Track ${i + 1}`
-    }));
+    // Real Project Tracks (Destinations)
+    // We filter and sort them to have a consistent order (Drums first, then Melody)
+    const timelineTracks = React.useMemo(() => {
+        const tracks = Object.values(project.tracks);
+        const drums = tracks.filter(t => t.type === 'drums').sort((a, b) => a.name.localeCompare(b.name));
+        const melody = tracks.filter(t => t.type === 'melody').sort((a, b) => a.name.localeCompare(b.name));
+        return [...drums, ...melody].map(t => ({
+            id: t.id,
+            name: t.name,
+            color: t.type === 'drums' ? '#ff9800' : '#2196f3'
+        }));
+    }, [project.tracks]);
 
     // Unified Timeline Clips
     const timelineClips = project.timeline.clips;
