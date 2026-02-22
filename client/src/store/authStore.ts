@@ -18,7 +18,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
     persist(
-        (_set) => ({
+        (): AuthState => ({
             token: 'local-token',
             user: { id: 1, email: 'local@studio', username: 'Local Producer', roles: [] },
             isAuthenticated: true,

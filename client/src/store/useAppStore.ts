@@ -20,18 +20,11 @@ interface AppState {
 
     // Audio State
     bpm: number;
-    isPlaying: boolean;
-    playingStep: number;
     masterVolume: number;
     isMasterMuted: boolean;
-    playMode: 'PATTERN' | 'SKYLINE';
     viewMode: 'trigger' | 'volume' | 'fill'; // Added
 
-    togglePlayMode: () => void;
     setBpm: (bpm: number) => void;
-    setIsPlaying: (isPlaying: boolean) => Promise<void> | void;
-    stop: () => void;
-    setPlayingStep: (step: number) => void;
     setMasterVolume: (volume: number) => void;
     setMasterMute: (muted: boolean) => void;
     setViewMode: (mode: 'trigger' | 'volume' | 'fill') => void;
@@ -57,11 +50,8 @@ export const useAppStore = create<AppState>((set) => ({
 
     // Audio Initial State
     bpm: 120,
-    isPlaying: false,
-    playingStep: -1,
     masterVolume: 0.8,
     isMasterMuted: false,
-    playMode: 'PATTERN',
     viewMode: 'trigger', // Default
 
     setBpm: (bpm) => {
@@ -72,38 +62,9 @@ export const useAppStore = create<AppState>((set) => ({
     },
     // Initialize Audio Engine Hook
     _initAudio: () => {
-        audioInstance.onStepChange = (step) => {
-            set({ playingStep: step });
-        };
+        // onStepChange is now handled by usePlaybackStore and AudioEngine directly.
     },
-    togglePlayMode: () => set((state) => {
-        const newMode = state.playMode === 'SKYLINE' ? 'PATTERN' : 'SKYLINE';
-        if (newMode === 'PATTERN') {
-            audioInstance.setLoop(0, 2, true); // 32 steps = 2 bars loop
-        } else {
-            audioInstance.setLoop(0, 100, false); // Disable loop for Song Mode
-        }
-        return { playMode: newMode };
-    }),
     setViewMode: (mode) => set({ viewMode: mode }), // Implementation
-    setIsPlaying: async (isPlaying) => {
-        try {
-            if (isPlaying) {
-                await audioInstance.start();
-            } else {
-                audioInstance.pause();
-            }
-            set({ isPlaying });
-        } catch (error) {
-            console.error("Failed to toggle playback", error);
-            set({ isPlaying: false });
-        }
-    },
-    stop: () => {
-        audioInstance.stop();
-        set({ isPlaying: false, playingStep: 0 });
-    },
-    setPlayingStep: (step) => set({ playingStep: step }),
     setMasterVolume: (volume) => {
         set({ masterVolume: volume });
         // Sync to Project Store (which also handles Audio Engine)

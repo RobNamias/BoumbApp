@@ -1,7 +1,8 @@
 {
     "hero": {
         "subtitle": "Votre Studio Musical Cloud",
-        "new_feature": "NOUVEAU : Export WAV & Rec Live",
+        "new_feature": "NOUVEAU : MonoSynth & Ultra Fluide",
+        "old_feature": "Aussi : Export WAV & Rec Live",
         "enter": "ENTRER STUDIO",
         "features": {
             "sequencer": "Séquenceur",

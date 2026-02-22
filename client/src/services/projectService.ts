@@ -7,7 +7,7 @@ function read() {
     catch { return []; }
 }
 
-function write(data: any[]) {
+function write(data: unknown[]) {
     localStorage.setItem(LS_KEY, JSON.stringify(data));
 }
 
@@ -24,9 +24,9 @@ export const projectService = {
         return read();
     },
 
-    getLatestVersion: async (projectId: string | number): Promise<any | null> => {
+    getLatestVersion: async (projectId: string | number): Promise<unknown | null> => {
         const projects = read();
-        const project = projects.find((p: any) => p.id === String(projectId));
+        const project = projects.find((p: Record<string, unknown>) => p.id === String(projectId));
         // In our simplified mock, the project directly contains the data or the latest version data
         // Let's assume the project structure in LS stores the latest 'data' directly or in a versions array.
         // For this simple mock, let's assume 'data' is top level or we return the project itself if it matches structure.
@@ -41,9 +41,9 @@ export const projectService = {
         };
     },
 
-    getProjectVersions: async (projectId: string | number): Promise<any[]> => {
+    getProjectVersions: async (projectId: string | number): Promise<unknown[]> => {
         const projects = read();
-        const project = projects.find((p: any) => p.id === String(projectId));
+        const project = projects.find((p: Record<string, unknown>) => p.id === String(projectId));
         if (!project) return [];
         // Return a single version representing the current state
         return [{
@@ -71,7 +71,7 @@ export const projectService = {
 
     saveVersion: async (projectId: string | number, data: ProjectData) => {
         const projects = read();
-        const idx = projects.findIndex((p: any) => p.id === String(projectId));
+        const idx = projects.findIndex((p: Record<string, unknown>) => p.id === String(projectId));
 
         if (idx >= 0) {
             projects[idx] = { ...projects[idx], data, updatedAt: Date.now() };
@@ -85,14 +85,14 @@ export const projectService = {
         return 2; // Stub version number
     },
 
-    exportProjectToJSON: async (project: any) => {
-        const fileName = `${project.meta.title || 'project'}.json`;
+    exportProjectToJSON: async (project: { meta?: { title?: string } }) => {
+        const fileName = `${project.meta?.title || 'project'}.json`;
         const jsonStr = JSON.stringify(project, null, 2);
 
         try {
-            // @ts-ignore
+            // @ts-expect-error - showSaveFilePicker is not fully typed in standard dom
             if (globalThis.showSaveFilePicker) {
-                // @ts-ignore
+                // @ts-expect-error - showSaveFilePicker is not fully typed in standard dom
                 const handle = await globalThis.showSaveFilePicker({
                     suggestedName: fileName,
                     types: [{
@@ -105,8 +105,8 @@ export const projectService = {
                 await writable.close();
                 return;
             }
-        } catch (err: any) {
-            if (err.name === 'AbortError') return; // User cancelled
+        } catch (err: unknown) {
+            if (err && typeof err === 'object' && 'name' in err && err.name === 'AbortError') return; // User cancelled
             console.warn('File System Access API failed, falling back to download', err);
         }
 
@@ -120,13 +120,14 @@ export const projectService = {
         downloadAnchorNode.remove();
     },
 
-    validateProjectData: (data: any): boolean => {
+    validateProjectData: (data: unknown): boolean => {
         // Basic schema validation
         if (!data || typeof data !== 'object') return false;
+        const d = data as Record<string, unknown>;
         // Check for critical top-level properties
-        if (!data.meta || typeof data.meta !== 'object') return false;
-        if (!data.tracks || typeof data.tracks !== 'object') return false;
-        if (!data.drumPatterns || typeof data.drumPatterns !== 'object') return false;
+        if (!d.meta || typeof d.meta !== 'object') return false;
+        if (!d.tracks || typeof d.tracks !== 'object') return false;
+        if (!d.drumPatterns || typeof d.drumPatterns !== 'object') return false;
 
         // Optional: Check version compatibility
         // if (data.version && data.version > CURRENT_VERSION) return false;

@@ -26,5 +26,4 @@ i18n
     }
   });
 
-// eslint-disable-next-line import/no-named-as-default-member
 export default i18n;

@@ -109,4 +109,46 @@
             }
         }
     }
+
+    .engineSelector {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+
+        button {
+            flex: 1;
+            padding: 4px;
+            background: #252525;
+            border: 1px solid #444;
+            color: #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+
+            &.active {
+                background: #4CAF50;
+                color: #fff;
+                border-color: #81C784;
+            }
+        }
+    }
+
+    .monoSection {
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid #333;
+
+        .sectionTitle {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .filterKnobs {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+    }
 }

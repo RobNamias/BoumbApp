@@ -8,8 +8,9 @@ export const useAudioRecorder = (onRecordingComplete?: (blob: Blob) => void) => 
     const recorderRef = useRef<Tone.Recorder | null>(null);
 
     const startRecording = useCallback(async () => {
-        if (Date.now() - (globalThis as any)._lastRecClick < 500) return; // Debounce
-        (globalThis as any)._lastRecClick = Date.now();
+        const globalObj = globalThis as unknown as { _lastRecClick?: number };
+        if (globalObj._lastRecClick && Date.now() - globalObj._lastRecClick < 500) return; // Debounce
+        globalObj._lastRecClick = Date.now();
 
         console.log("[useAudioRecorder] Starting Recording...");
 

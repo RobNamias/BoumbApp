@@ -53,3 +53,5 @@ backups/
 .gemini/
 .agent/
 brain/
+
+*.pyc

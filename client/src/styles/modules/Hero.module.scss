@@ -218,8 +218,19 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    margin-bottom: 15px;
     box-shadow: 0 0 10px rgba(187, 134, 252, 0.3);
+}
+
+.oldFeatureBadge {
+    background: rgba(255, 255, 255, 0.05);
+    color: #9ca3af;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .disclaimer {
